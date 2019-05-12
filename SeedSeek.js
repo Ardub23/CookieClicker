@@ -104,6 +104,7 @@ SeedSeek.launch = function(){
 	
 	SeedSeek.recipesToDisplay = function(){
 		var recipesList = '<div width="100%"><b>Possible mutations:</b><br/>';
+		var listedARecipe = false;
 		
 		var garden = Game.Objects['Farm'].minigame;
 		
@@ -146,6 +147,7 @@ SeedSeek.launch = function(){
 				}
 				
 				if(usableRecipes.length > 0) {
+					listedARecipe = true;
 					// Display the result and all usable recipes
 					recipesList += '<b>' + resultSeed.name + '</b><br/>';
 					for(j = 0; j < usableRecipes.length; j++) {
@@ -179,6 +181,10 @@ SeedSeek.launch = function(){
 					}
 				}
 			}
+		}
+		
+		if(!listedARecipe) {
+			recipesList += '<b>None.</b><br/>
 		}
 		
 		return recipesList;
