@@ -184,7 +184,7 @@ SeedSeek.launch = function(){
 		}
 		
 		if(!listedARecipe) {
-			recipesList += '<b>None.</b><br/>
+			recipesList += '<b>None.</b><br/>';
 		}
 		
 		return recipesList;
