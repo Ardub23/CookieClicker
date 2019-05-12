@@ -15,7 +15,6 @@ SeedSeek.launch = function(){
 		CCSE.customLoad.push(SeedSeek.loadConfig);
 		CCSE.customSave.push(SeedSeek.saveConfig);
 		
-		SeedSeek.addPlantInfo();
 		SeedSeek.ReplaceFarmTooltip();
 		SeedSeek.ReplaceGameMenu();
 		
@@ -99,7 +98,6 @@ SeedSeek.launch = function(){
 		});
 	}
 	
-	
 	//***********************************
 	//    Available recipes
 	//***********************************
@@ -122,6 +120,10 @@ SeedSeek.launch = function(){
 		
 		for(i = 0; i < garden.plantsById.length; i++) {
 			var resultSeed = garden.plantsById[i];
+			
+			// If this is called before the garden is unlocked, the seed data gets overwritten, so we call it here.
+			if(!resultSeed.recipes)
+				SeedSeek.addPlantInfo();
 			
 			if(SeedSeek.config.showAll || (resultSeed.unlocked == 0 && !(resultSeed.isGrowing && SeedSeek.config.growingPlantsObtained))) {
 				
@@ -378,7 +380,7 @@ SeedSeek.launch = function(){
 			{chance:"0.2%", parents:[{plant:plants["elderwort"]}, {plant:plants["crumbspore"]}]}
 		];
 	}
-
+	
 	if(CCSE.ConfirmGameVersion(SeedSeek.name, SeedSeek.version, SeedSeek.GameVersion)) SeedSeek.init();
 }
 
