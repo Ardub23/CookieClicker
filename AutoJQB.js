@@ -1,5 +1,5 @@
 //******************************************
-// AutoJQB.g Guard v1.0
+// Auto JQB v1.0
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
 // CCSE and portions of this program's code
