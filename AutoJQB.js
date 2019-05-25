@@ -10,7 +10,7 @@ Game.Win('Third-party');
 if(AutoJQB === undefined) var AutoJQB = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 AutoJQB.name = 'Auto JQB';
-AutoJQB.version = '1.0';
+AutoJQB.version = '0.1';
 AutoJQB.GameVersion = '2.019';
 
 AutoJQB.launch = function(){
@@ -214,7 +214,7 @@ AutoJQB.launch = function(){
 					Game.Upgrades['Golden switch [on]'].buy();
 				}
 				
-				setTimeout(function() {	// Wait half a second before proceeding
+				setTimeout(function() {	// Wait 500 ms to ensure that golden switch CPS change registers
 					for(var y = 0; y < 6; y++) {
 						for(var x = 0; x < 6; x++) {
 							if((x!=1&&x!=4) || (y!=1&&y!=4)) {
@@ -269,19 +269,21 @@ AutoJQB.launch = function(){
 					Game.Upgrades['Golden switch [off]'].buy();
 				}
 				
-				for(var y = 0; y < 6; y++) {
-					for(var x = 0; x < 6; x++) {
-						var me = AutoJQB.g.getTile(x,y);
-						
-						if(me[0] == 21 && me[1] >= AutoJQB.g.plants['queenbeet'].mature) {
-							AutoJQB.g.clickTile(x,y);
+				setTimeout(function() {
+					for(var y = 0; y < 6; y++) {
+						for(var x = 0; x < 6; x++) {
+							var me = AutoJQB.g.getTile(x,y);
+							
+							if(me[0] == 21 && me[1] >= AutoJQB.g.plants['queenbeet'].mature) {
+								AutoJQB.g.clickTile(x,y);
+							}
 						}
 					}
-				}
-				
-				if(!hadGoldenSwitch) {
-					Game.Upgrades['Golden switch [off]'].buy();
-				}
+					
+					if(!hadGoldenSwitch) {
+						Game.Upgrades['Golden switch [off]'].buy();
+					}
+				}, 500);
 			}
 			
 			// Plant elderworts
@@ -293,18 +295,20 @@ AutoJQB.launch = function(){
 					Game.Upgrades['Golden switch [on]'].buy();
 				}
 				
-				for(var y = 0; y < 6; y++) {
-					for(var x = 0; x < 6; x++) {
-						if(AutoJQB.g.getTile(x,y)[0] == 0 && ((x!=1&&x!=4) || (y!=1&&y!=4))) {
-							AutoJQB.g.seedSelected = AutoJQB.g.plants['elderwort'].id;
-							AutoJQB.g.clickTile(x,y);
+				setTimeout(function(){
+					for(var y = 0; y < 6; y++) {
+						for(var x = 0; x < 6; x++) {
+							if(AutoJQB.g.getTile(x,y)[0] == 0 && ((x!=1&&x!=4) || (y!=1&&y!=4))) {
+								AutoJQB.g.seedSelected = AutoJQB.g.plants['elderwort'].id;
+								AutoJQB.g.clickTile(x,y);
+							}
 						}
 					}
-				}
-				
-				if(hadGoldenSwitch) {
-					Game.Upgrades['Golden switch [off]'].buy();
-				}
+					
+					if(hadGoldenSwitch) {
+						Game.Upgrades['Golden switch [off]'].buy();
+					}
+				}, 500);
 			}
 		}
 	}
