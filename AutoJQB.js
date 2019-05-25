@@ -63,7 +63,7 @@ AutoJQB.launch = function(){
 		else
 			AutoJQB.config = {};
 		
-		// Default values if they're missing
+		// All settings are off by default
 		if(AutoJQB.config.plantQBs === undefined) AutoJQB.config.plantQBs = false;
 		if(AutoJQB.config.doGoldenSwitch === undefined) AutoJQB.config.doGoldenSwitch = false;
 		if(AutoJQB.config.switchWoodChips === undefined) AutoJQB.config.switchWoodChips = false;
@@ -110,14 +110,30 @@ AutoJQB.launch = function(){
 	AutoJQB.toggleHarvestJQBs = function(){
 		AutoJQB.config.harvestJQBs = !AutoJQB.config.harvestJQBs;
 	}
-
+	
+	AutoJQB.allOn = function(){
+		for(var i in AutoJQB.config) {
+			if(AutoJQB.config[i] === false) {
+				AutoJQB.config[i] = true;
+			}
+		}
+	}
+	
+	AutoJQB.allOff = function(){
+		for(var i in AutoJQB.config) {
+			if(AutoJQB.config[i] === true) {
+				AutoJQB.config[i] = false;
+			}
+		}
+	}
+	
 	//***********************************
 	//    Replacement
 	//***********************************
 	AutoJQB.ReplaceGameMenu = function(){	// TODO
 		Game.customOptionsMenu.push(function(){
 			var checkbox = function(func, condition){
-				return '<input type="checkbox" onclick="' + func + '"' +
+				return '<input type="checkbox" '+Game.clickStr+'="' + func + '"' +
 						((condition)? ' checked' : '') + '>';
 			}
 			
@@ -127,43 +143,51 @@ AutoJQB.launch = function(){
 				optionsMenu += '<div class="listing"><div class="red"><b>All features of Auto JQB are disabled</b> because your farms are below level 9.</div> <small>(This is done to ensure that nothing goes wrong checking for tiles that aren\'t there. Once your farms are leveled up, this message should disappear.)</small></div>'
 			}
 			
+			optionsMenu += '<div class="listing"><a class="option" '+Game.clickStr+'="AutoJQB.allOn();PlaySound(\'snd/tick.mp3\');">All ON</a> <a class="option" '+Game.clickStr+'="AutoJQB.allOff();PlaySound(\'snd/tick.mp3\');">All OFF</a></div>';
+			
 			optionsMenu += '<div class="listing">' +
 				checkbox('AutoJQB.togglePlantQBs()', AutoJQB.config.plantQBs) +
-				'Auto-plant queenbeets in an empty garden</div>';
+				'<label>Auto-plant queenbeets in an empty garden</label></div>';
 			
 			optionsMenu += '<div class="listing">' +
 				checkbox('AutoJQB.toggleDoGoldenSwitch()', AutoJQB.config.doGoldenSwitch) +
-				'Manage golden switch' +
-				'<div class="listing"><small>If the golden switch is on, briefly turn it off when auto-planting (to make seeds cheaper);</div>' +
-				'<div class="listing">if it\'s off, briefly turn it on when auto-harvesting queenbeets (to increase gains).</small></div></div>';
+				'<label>Manage golden switch&nbsp;&nbsp;&nbsp;<small>(If the golden switch is on, briefly turn it off when auto-planting; if it\'s off, briefly turn it on when auto-harvesting queenbeets.)</small></div>';
 			
 			optionsMenu += '<div class="listing">' +
 				checkbox('AutoJQB.toggleSwitchWoodChips()', AutoJQB.config.switchWoodChips) +
-				'Switch soil to wood chips when juicy queenbeets have a chance to appear</div>';
+				'<label>Switch soil to wood chips when juicy queenbeets have a chance to appear</label></div>';
 			
 			optionsMenu += '<div class="listing">' +
 				checkbox('AutoJQB.toggleClearJQBTiles()', AutoJQB.config.clearJQBTiles) +
-				'Clear away other plants (e.g. duketaters) in tiles where juicy queenbeets can grow</div>';
+				'<label>Clear away other plants <small>(e.g. duketaters)</small> in tiles where juicy queenbeets can grow</label></div>';
 			
 			optionsMenu += '<div class="listing">' +
 				checkbox('AutoJQB.toggleStartSaveScum()', AutoJQB.config.startSaveScum) +
-				'Automatically savescum for juicy queenbeets to appear when possible</div>';
+				'<label>Automatically start savescumming for juicy queenbeets to appear when possible.'
+			if(AutoJQB.countJQBTiles() == 0 || AutoJQB.config.startSaveScum) {
+				optionsMenu += ' <small>If disabled, buttons to kickstart the savescumming yourself will appear here when a JQB is possible.</small></label></div>'
+			} else {
+				// 'Start auto-savescumming' buttons
+				optionsMenu += '</label></div>';
+				optionsMenu += '<div class="listing"><a class="option" '+Game.clickStr+'="AutoJQB.mySaveString=Game.WriteSave(1); AutoJQB.desiredAmount=AutoJQB.countPlants(22)+1; AutoJQB.busy=true; AutoJQB.saveScumLoop=setInterval(AutoJQB.saveScum,10,1); PlaySound(\'snd/tick.mp3\');">Savescum 1 JQB</a> ';
+				optionsMenu += '<a class="option" '+Game.clickStr+'="AutoJQB.mySaveString=Game.WriteSave(1); AutoJQB.desiredAmount=AutoJQB.countPlants(22)+1; AutoJQB.busy=true; AutoJQB.saveScumLoop=setInterval(AutoJQB.saveScum,10); PlaySound(\'snd/tick.mp3\');">Savescum max JQBs</a></div>';
+			}
 			
 			optionsMenu += '<div class="listing">' +
 				checkbox('AutoJQB.toggleHarvestQBs()', AutoJQB.config.harvestQBs) +
-				'Auto-harvest queenbeets after a juicy queenbeet appears</div>';
+				'<label>Auto-harvest queenbeets after a juicy queenbeet appears</label></div>';
 			
 			optionsMenu += '<div class="listing">' +
 				checkbox('AutoJQB.toggleSwitchFertilizer()', AutoJQB.config.switchFertilizer) +
-				'Switch soil to fertilizer when waiting for plants to grow</div>';
+				'<label>Switch soil to fertilizer when waiting for plants to grow</label></div>';
 			
 			optionsMenu += '<div class="listing">' +
 				checkbox('AutoJQB.togglePlantElderworts()', AutoJQB.config.plantElderworts) +
-				'Auto-plant elderworts around growing juicy queenbeets</div>';
+				'<label>Auto-plant elderworts around growing juicy queenbeets</label></div>';
 			
 			optionsMenu += '<div class="listing">' +
 				checkbox('AutoJQB.toggleHarvestJQBs()', AutoJQB.config.harvestJQBs) +
-				'Auto-harvest mature juicy queenbeets (and surrounding elderworts)</div>';
+				'<label>Auto-harvest mature juicy queenbeets (and surrounding elderworts)</label></div>';
 			
 			CCSE.AppendCollapsibleOptionsMenu(AutoJQB.name, optionsMenu);
 		});
@@ -283,17 +307,20 @@ AutoJQB.launch = function(){
 		}
 	}
 	
-	AutoJQB.saveScum = function() {
-		if(AutoJQB.g.freeze) return false;
-		
-		if(AutoJQB.countJQBTiles() == 0) {
-			// Stop save-scumming if no more JQBs can grow
+	AutoJQB.saveScum = function(justOne) {
+			if(AutoJQB.g.freeze || AutoJQB.countJQBTiles() == 0) {
+			// Stop save-scumming if garden is frozen or no more JQBs can grow
 			AutoJQB.busy = false;
 			clearInterval(AutoJQB.saveScumLoop);
 		} else if(AutoJQB.countPlants(22) >= AutoJQB.desiredAmount) {
 			// If we've gained a JQB, save and prepare to go for the next one
 			AutoJQB.desiredAmount = AutoJQB.countPlants(22) + 1;
 			AutoJQB.mySaveString = Game.WriteSave(1);
+			
+			if(justOne) {
+				AutoJQB.busy = false;
+				clearInterval(AutoJQB.saveScumLoop);
+			}
 		} else if(AutoJQB.g.nextStep-Date.now() > 1000*(AutoJQB.g.soilsById[AutoJQB.g.soil].tick*60-2)) {
 			// If time is just after a AutoJQB.g tick, load the save
 			Game.ImportSaveCode(AutoJQB.mySaveString);
@@ -339,8 +366,8 @@ AutoJQB.launch = function(){
 					if(neighborQBs >= 8 && AutoJQB.g.getTile(x,y)[0] != 22) {
 						if(AutoJQB.config.clearJQBTiles) {
 							AutoJQB.g.harvest(x,y);
-							possibleTiles++;
-						} else if(AutoJQB.g.getTile(x,y)[0] == 0) {
+						}
+						if(AutoJQB.g.getTile(x,y)[0] == 0) {
 							possibleTiles++;
 						}
 					}
@@ -371,7 +398,7 @@ AutoJQB.launch = function(){
 		return (Game.cookies >= cost);
 	}
 	
-//***********************************
+	//***********************************
 	//    Debug functions
 	//***********************************
 	
@@ -392,7 +419,7 @@ AutoJQB.launch = function(){
 	AutoJQB.debug.loadGarden = function() {
 		if(AutoJQB.config.debugGardenSave)
 			Game.Objects['Farm'].minigame.plot = AutoJQB.config.debugGardenSave;
-		// After loading the farm, save the game and reload to see the changes immediately
+		// After loading the farm, changes won't be immediately visible; save and reload to see them.
 	}
 	
 	
