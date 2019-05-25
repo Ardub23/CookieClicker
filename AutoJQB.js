@@ -165,7 +165,7 @@ AutoJQB.launch = function(){
 				checkbox('AutoJQB.toggleStartSaveScum()', AutoJQB.config.startSaveScum) +
 				'<label>Automatically start savescumming for juicy queenbeets to appear when possible.'
 			if(AutoJQB.countJQBTiles() == 0 || AutoJQB.config.startSaveScum) {
-				optionsMenu += ' <small>If disabled, buttons to kickstart the savescumming yourself will appear here when a JQB is possible.</small></label></div>'
+				optionsMenu += ' <small>(If disabled, buttons to kickstart the savescumming yourself will appear here when a JQB is possible.)</small></label></div>'
 			} else {
 				// 'Start auto-savescumming' buttons
 				optionsMenu += '</label></div>';
@@ -214,18 +214,20 @@ AutoJQB.launch = function(){
 					Game.Upgrades['Golden switch [on]'].buy();
 				}
 				
-				for(var y = 0; y < 6; y++) {
-					for(var x = 0; x < 6; x++) {
-						if((x!=1&&x!=4) || (y!=1&&y!=4)) {
-							AutoJQB.g.seedSelected = AutoJQB.g.plants['queenbeet'].id;
-							AutoJQB.g.clickTile(x,y);
+				setTimeout(function() {	// Wait half a second before proceeding
+					for(var y = 0; y < 6; y++) {
+						for(var x = 0; x < 6; x++) {
+							if((x!=1&&x!=4) || (y!=1&&y!=4)) {
+								AutoJQB.g.seedSelected = AutoJQB.g.plants['queenbeet'].id;
+								AutoJQB.g.clickTile(x,y);
+							}
 						}
 					}
-				}
-				
-				if(hadGoldenSwitch) {
-					Game.Upgrades['Golden switch [off]'].buy();
-				}
+					
+					if(hadGoldenSwitch) {
+						Game.Upgrades['Golden switch [off]'].buy();
+					}
+				}, 500);
 			}
 		} else if(AutoJQB.countJQBTiles() > 0) {	// At least one tile can grow a JQB
 			if(AutoJQB.config.switchWoodChips)
@@ -250,7 +252,7 @@ AutoJQB.launch = function(){
 						}
 					}
 				}
-				if(AutoJQB.countPlants(22) == 0) {
+				if(AutoJQB.countPlants(8) == AutoJQB.countPlants()) {	// All remaining plants are elderworts
 					Game.Objects['Farm'].minigame.harvestAll();
 					return 1;
 				}
