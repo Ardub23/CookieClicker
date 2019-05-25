@@ -1,5 +1,5 @@
 //*******************************************
-// Disable Big Cookie v1.0
+// Disable Big Cookie v1.0.1
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
 // CCSE and portions of this program's code
@@ -10,7 +10,7 @@ Game.Win('Third-party');
 if(DisableBigCookie === undefined) var DisableBigCookie = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 DisableBigCookie.name = 'Disable Big Cookie';
-DisableBigCookie.version = '1.0';
+DisableBigCookie.version = '1.0.1';
 DisableBigCookie.GameVersion = '2.019';
 
 DisableBigCookie.launch = function(){
@@ -70,14 +70,14 @@ DisableBigCookie.launch = function(){
 	//***********************************
 	DisableBigCookie.ReplaceGameMenu = function(){
 		Game.customOptionsMenu.push(function(){
-			var checkbox = function(name, func, condition){
-				return '<input type="checkbox" name="' + name + '" onclick="' + func + '"' +
+			var checkbox = function(func, condition){
+				return '<input type="checkbox" '+Game.clickStr+'="' + func + '"' +
 						((condition)? ' checked' : '') + '>';
 			}
 			
 			var optionsMenu = '<div class="listing">' +
-				checkbox('disableCookie', 'DisableBigCookie.toggleDisabled()', DisableBigCookie.config.disabled) +
-				'Disable the big cookie</div>';
+				checkbox('DisableBigCookie.toggleDisabled()', DisableBigCookie.config.disabled) +
+				'<label>Disable the big cookie</label></div>';
 			
 			CCSE.AppendCollapsibleOptionsMenu(DisableBigCookie.name, optionsMenu);
 		});
