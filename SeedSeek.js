@@ -1,8 +1,16 @@
+//******************************************
+// Seed Seek v1.0.1
+// by Ardub23 (reddit.com/u/Ardub23)
+// 
+// CCSE and portions of this program's code
+// by klattmose (reddit.com/u/klattmose)
+//*******************************************
+
 Game.Win('Third-party');
 if(SeedSeek === undefined) var SeedSeek = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 SeedSeek.name = 'Seed Seek';
-SeedSeek.version = '1.0';
+SeedSeek.version = '1.0.1';
 SeedSeek.GameVersion = '2.019';
 
 SeedSeek.launch = function(){
@@ -70,16 +78,18 @@ SeedSeek.launch = function(){
 	//***********************************
 	SeedSeek.ReplaceGameMenu = function(){
 		Game.customOptionsMenu.push(function(){
+			var checkbox = function(func, condition){
+				return '<input type="checkbox" '+Game.clickStr+'="' + func + '"' +
+						((condition)? ' checked' : '') + '>';
+			}
+			
 			CCSE.AppendCollapsibleOptionsMenu(SeedSeek.name,
-				'<div class="listing"><input type="checkbox" name="showAll" onclick="SeedSeek.toggleShowAll()"' +
-					((SeedSeek.config.showAll)? ' checked' : '') + '> Show all mutations</div>' +
-				'<div class="listing"><small>If enabled, all possible mutations will be shown, including ones for plants whose seeds you\'ve already unlocked.</small></div>' + 
-				'<div class="listing"><input type="checkbox" name="growingPlantsUsable" onclick="SeedSeek.toggleGrowingPlantsUsable()"' +
-					((SeedSeek.config.growingPlantsUsable)? ' checked' : '') + '> Consider growing plants usable</div>' +
-				'<div class="listing"><small>If enabled, plants that are currently growing in your garden will be considered usable for mutations, even if you haven\'t unlocked the seed yet.</small></div>' + 
-				'<div class="listing"><input type="checkbox" name="growingPlantsObtained" onclick="SeedSeek.toggleGrowingPlantsObtained()"' +
-					((SeedSeek.config.growingPlantsObtained)? ' checked' : '') + '> Consider growing plants obtained</div>' +
-				'<div class="listing"><small>If enabled, mutations for plants that are growing in your garden will be hidden, as if the seed were already unlocked. (The "show all" option overrides this.)</small></div>'
+				'<div class="listing">' + checkbox('SeedSeek.toggleShowAll()',SeedSeek.config.showAll) + '<label>Show all mutations</label></div>' +
+				'<div class="listing"><label><small>(If enabled, all possible mutations will be shown, including ones for plants whose seeds you\'ve already unlocked.)</small></label></div>' +
+				'<div class="listing">' + checkbox('SeedSeek.toggleGrowingPlantsUsable()',SeedSeek.config.growingPlantsUsable) + '<label>Consider growing plants usable</label></div>' +
+				'<div class="listing"><label><small>(If enabled, any plant that\'s currently growing in your garden will be considered usable for mutations, even if you haven\'t unlocked the seed yet.)</small></label></div>' +
+				'<div class="listing">' + checkbox('SeedSeek.toggleGrowingPlantsObtained()',SeedSeek.config.growingPlantsObtained) + '<label>Consider growing plants obtained</label></div>' +
+				'<div class="listing"><label><small>(If enabled, mutations for plants that are growing in your garden will be hidden, as if the seed were already unlocked. The "show all mutations" option overrides this.)</small></label></div>'
 			);
 		});
 		
@@ -92,7 +102,7 @@ SeedSeek.launch = function(){
 		if(!Game.customMinigame['Farm'].toolTooltip) Game.customMinigame['Farm'].toolTooltip = [];
 		Game.customMinigame['Farm'].toolTooltip.push(function(id, str){
 			if(id == 0)
-				return str.replace( str.substring(str.indexOf('<img src'), str.indexOf('</small>')+8), 
+				return str.replace( str.substring(str.indexOf('<img src'), str.indexOf('</small>')+8), // Image and tutorial
 									'<div style="height:8px;"></div>' + SeedSeek.recipesToDisplay());
 			else return str;
 		});
