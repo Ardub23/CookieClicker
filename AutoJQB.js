@@ -351,7 +351,7 @@ AutoJQB.launch = function(){
 			AutoJQB.mySaveString = Game.WriteSave(1);
 			
 			if(justOne) {
-				AutoJQB.busy = false;
+				AutoJQ	B.busy = false;
 				clearInterval(AutoJQB.saveScumLoop);
 			}
 		} else if(AutoJQB.g.nextStep-Date.now() > 1000*(AutoJQB.g.soilsById[AutoJQB.g.soil].tick*60-2)) {
@@ -363,8 +363,8 @@ AutoJQB.launch = function(){
 		}
 	}
 	
-	AutoJQB.saveScumJQBGrowth = function(justOne) {
-		if(AutoJQB.g.freeze || AutoJQB.JQBLocations.length == 0) {
+	AutoJQB.saveScumJQBGrowth = function() {
+		if(AutoJQB.g.freeze || AutoJQB.JQBLocations.length == 0 || !AutoJQB.config.scumJQBGrowth) {
 			// Stop save-scumming if garden is frozen or no JQBs are immature
 			AutoJQB.busy = false;
 			clearInterval(AutoJQB.saveScumLoop);
