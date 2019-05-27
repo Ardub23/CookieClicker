@@ -1,5 +1,5 @@
 //******************************************
-// Auto JQB v0.2
+// Auto JQB v0.2.1
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
 // CCSE and portions of this program's code
@@ -10,7 +10,7 @@ Game.Win('Third-party');
 if(AutoJQB === undefined) var AutoJQB = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 AutoJQB.name = 'Auto JQB';
-AutoJQB.version = '0.2';
+AutoJQB.version = '0.2.1';
 AutoJQB.GameVersion = '2.019';
 
 AutoJQB.launch = function(){
@@ -351,7 +351,7 @@ AutoJQB.launch = function(){
 			AutoJQB.mySaveString = Game.WriteSave(1);
 			
 			if(justOne) {
-				AutoJQ	B.busy = false;
+				AutoJQB.busy = false;
 				clearInterval(AutoJQB.saveScumLoop);
 			}
 		} else if(AutoJQB.g.nextStep-Date.now() > 1000*(AutoJQB.g.soilsById[AutoJQB.g.soil].tick*60-2)) {
