@@ -1,5 +1,5 @@
 //******************************************
-// Auto JQB v0.3.1
+// Auto JQB v0.3.2
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
 // CCSE and portions of this program's code
@@ -10,7 +10,7 @@ Game.Win('Third-party');
 if(AutoJQB === undefined) var AutoJQB = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 AutoJQB.name = 'Auto JQB';
-AutoJQB.version = '0.3.1';
+AutoJQB.version = '0.3.2';
 AutoJQB.GameVersion = '2.019';
 
 AutoJQB.launch = function(){
@@ -128,8 +128,6 @@ AutoJQB.launch = function(){
 				optionsMenu += '<div class="listing"><div class="red"><b>All features of Auto JQB are disabled</b> because your farms are below level 9.</div> <small>(This is done to ensure that nothing goes wrong checking for tiles that aren\'t there. Once your farms are leveled up, this message should disappear.)</small></div>'
 			}
 			
-			optionsMenu += '<div class="listing"><a class="option" '+Game.clickStr+'="AutoJQB.allOn();PlaySound(\'snd/tick.mp3\');">All ON</a> <a class="option" '+Game.clickStr+'="AutoJQB.allOff();PlaySound(\'snd/tick.mp3\');">All OFF</a><label><small>(The checkboxes below may take a few seconds to update)</small><label></div>';
-			
 			optionsMenu += '<div class="listing">' +
 				WriteButton('plantQBs','plantQBsButton','Plant queenbeets ON','Plant queenbeets OFF') +
 				'<label>(auto-plant queenbeets when the garden is empty)</label></div>';
@@ -175,8 +173,7 @@ AutoJQB.launch = function(){
 				WriteSlider('JQBGrowthSlider', '# JQBs to scum growth for', '[$]', function(){return AutoJQB.config.JQBGrowthCount}, "AutoJQB.setJQBGrowthCount(Math.round(l('JQBGrowthSlider').value)); l('JQBGrowthSliderRightText').innerHTML = AutoJQB.config.JQBGrowthCount;", 0, 3, 1) + '<label>(Auto-savescum to ensure that the specified number of juicy queenbeets age with each tick; set to 0 to disable. <small>4 isn\'t an option because it usually takes longer than 3 minutes to savescum for all 4 to age.</small>)</label></div>';
 			
 			optionsMenu += '<div class="listing">' +
-				WriteButton('harvestJQBs','harvestJQBsButton','Harvest juicy queenbeets ON','Harvest juicy queenbeets OFF')
-				checkbox('AutoJQB.toggleHarvestJQBs()', AutoJQB.config.harvestJQBs) +
+				WriteButton('harvestJQBs','harvestJQBsButton','Harvest juicy queenbeets ON','Harvest juicy queenbeets OFF') +
 				'<label>(Harvest mature juicy queenbeets; <small>if all that remains is elderworts, they will be harvested too<small>)</label></div>';
 			
 			CCSE.AppendCollapsibleOptionsMenu(AutoJQB.name, optionsMenu);
