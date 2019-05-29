@@ -1,5 +1,5 @@
 //*******************************************
-// Disable Big Cookie v1.0.1
+// Disable Big Cookie v1.0.2
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
 // CCSE and portions of this program's code
@@ -10,7 +10,7 @@ Game.Win('Third-party');
 if(DisableBigCookie === undefined) var DisableBigCookie = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 DisableBigCookie.name = 'Disable Big Cookie';
-DisableBigCookie.version = '1.0.1';
+DisableBigCookie.version = '1.0.2';
 DisableBigCookie.GameVersion = '2.019';
 
 DisableBigCookie.launch = function(){
@@ -24,7 +24,7 @@ DisableBigCookie.launch = function(){
 		CCSE.customSave.push(DisableBigCookie.saveConfig);
 		
 		DisableBigCookie.ReplaceGameMenu();
-		l('bigCookie').hidden = DisableBigCookie.config.disabled;
+		DisableBigCookie.setBigCookie();
 		
 		
 		//***********************************
@@ -56,12 +56,17 @@ DisableBigCookie.launch = function(){
 			DisableBigCookie.config = {};
 		
 		// Default values if they're missing
-		if(DisableBigCookie.config.disabled === undefined) DisableBigCookie.config.disabled = false;
+		if(DisableBigCookie.config.allowBigCookie === undefined) DisableBigCookie.config.allowBigCookie = true;
 	}
 	
-	DisableBigCookie.toggleDisabled = function(){
-		DisableBigCookie.config.disabled = !DisableBigCookie.config.disabled;
-		l('bigCookie').hidden = DisableBigCookie.config.disabled;
+	DisableBigCookie.toggle = function(prefName,button,on,off,invert) {
+		DisableBigCookie.config[prefName]=!DisableBigCookie.config[prefName];
+		l(button).innerHTML = (DisableBigCookie.config[prefName])?on:off;
+		l(button).className='option'+((DisableBigCookie.config[prefName]^invert)?'':' off');
+	}
+	
+	DisableBigCookie.setBigCookie = function() {
+		l('bigCookie').hidden = !DisableBigCookie.config.allowBigCookie;
 	}
 	
 
@@ -69,15 +74,17 @@ DisableBigCookie.launch = function(){
 	//    Replacement
 	//***********************************
 	DisableBigCookie.ReplaceGameMenu = function(){
+		function WriteButton(prefName,button,on,off,callback,invert){
+			var invert=invert?1:0;
+			if (!callback) callback='';
+			callback+='PlaySound(\'snd/tick.mp3\');';
+			return '<a class="option'+((DisableBigCookie.config[prefName]^invert)?'':' off')+'" id="'+button+'" '+Game.clickStr+'="DisableBigCookie.toggle(\''+prefName+'\',\''+button+'\',\''+on+'\',\''+off+'\',\''+invert+'\');'+callback+'">'+(DisableBigCookie.config[prefName]?on:off)+'</a>';
+		}
+		
 		Game.customOptionsMenu.push(function(){
-			var checkbox = function(func, condition){
-				return '<input type="checkbox" '+Game.clickStr+'="' + func + '"' +
-						((condition)? ' checked' : '') + '>';
-			}
-			
 			var optionsMenu = '<div class="listing">' +
-				checkbox('DisableBigCookie.toggleDisabled()', DisableBigCookie.config.disabled) +
-				'<label>Disable the big cookie</label></div>';
+				WriteButton('allowBigCookie','allowBigCookieButton','Big cookie ON','Big cookie OFF','DisableBigCookie.setBigCookie();') +
+				'</div>';
 			
 			CCSE.AppendCollapsibleOptionsMenu(DisableBigCookie.name, optionsMenu);
 		});

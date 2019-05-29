@@ -1,3 +1,9 @@
+v1.0.2
+– Checkbox is now button
+
 v1.0.1
 – Probably added touchscreen support to the options menu but I don't have a way to test it
 – Made the options menu look a bit nicer
+
+== v1.0 ==
+– Secret initial release
