@@ -1,16 +1,16 @@
-//******************************************
-// Seed Seek v1.0.1
+//***********************************************
+// Seed Seek v1.0.2
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
-// CCSE and portions of this program's code
+// CCSE and some portions of this program's code
 // by klattmose (reddit.com/u/klattmose)
-//*******************************************
+//***********************************************
 
 Game.Win('Third-party');
 if(SeedSeek === undefined) var SeedSeek = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 SeedSeek.name = 'Seed Seek';
-SeedSeek.version = '1.0.1';
+SeedSeek.version = '1.0.2';
 SeedSeek.GameVersion = '2.019';
 
 SeedSeek.launch = function(){
@@ -37,8 +37,9 @@ SeedSeek.launch = function(){
 			}
 		}
 		
-		if (Game.prefs.popups) Game.Popup('Seed Seek loaded!');
-		else Game.Notify('Seed Seek loaded!', '', '', 1, 1);
+		var startupStr = (Math.random() < 0.01)?'Seed Seek\'s sleek, see?':'Seed Seek loaded!';
+		if (Game.prefs.popups) Game.Popup(startupStr);
+		else Game.Notify(startupStr, '', '', 1, 1);
 	}
 
 
@@ -58,38 +59,35 @@ SeedSeek.launch = function(){
 		// Default values if they're missing
 		if(SeedSeek.config.showAll === undefined) SeedSeek.config.showAll = false;
 		if(SeedSeek.config.growingPlantsUsable === undefined) SeedSeek.config.growingPlantsUsable = true;
-		if(SeedSeek.config.growingPlantsObtained === undefined) SeedSeek.config.growingPlantsObtained = false;
-	}
-
-	SeedSeek.toggleShowAll = function(){
-		SeedSeek.config.showAll = !SeedSeek.config.showAll;
-	}
-	
-	SeedSeek.toggleGrowingPlantsUsable = function() {
-		SeedSeek.config.growingPlantsUsable = !SeedSeek.config.growingPlantsUsable;
+		if(SeedSeek.config.hideForGrowingPlants === undefined) SeedSeek.config.hideForGrowingPlants = false;
+		if(SeedSeek.config.removeTutorial === undefined) SeedSeek.config.removeTutorial = true;
+		
+		if(SeedSeek.config.growingPlantsObtained !== undefined) SeedSeek.config.hideForGrowingPlants = SeedSeek.config.growingPlantsObtained;
 	}
 	
-	SeedSeek.toggleGrowingPlantsObtained = function() {
-		SeedSeek.config.growingPlantsObtained = !SeedSeek.config.growingPlantsObtained;
+	SeedSeek.toggle = function(prefName,button,on,off,invert) {
+		SeedSeek.config[prefName]=!SeedSeek.config[prefName];
+		l(button).innerHTML = (SeedSeek.config[prefName])?on:off;
+		l(button).className='option'+((SeedSeek.config[prefName]^invert)?'':' off');
 	}
 
 	//***********************************
 	//    Replacement
 	//***********************************
 	SeedSeek.ReplaceGameMenu = function(){
+		function WriteButton(prefName,button,on,off,callback,invert){
+			var invert=invert?1:0;
+			if (!callback) callback='';
+			callback+='PlaySound(\'snd/tick.mp3\');';
+			return '<a class="option'+((SeedSeek.config[prefName]^invert)?'':' off')+'" id="'+button+'" '+Game.clickStr+'="SeedSeek.toggle(\''+prefName+'\',\''+button+'\',\''+on+'\',\''+off+'\',\''+invert+'\');'+callback+'">'+(SeedSeek.config[prefName]?on:off)+'</a>';
+		}
+		
 		Game.customOptionsMenu.push(function(){
-			var checkbox = function(func, condition){
-				return '<input type="checkbox" '+Game.clickStr+'="' + func + '"' +
-						((condition)? ' checked' : '') + '>';
-			}
-			
 			CCSE.AppendCollapsibleOptionsMenu(SeedSeek.name,
-				'<div class="listing">' + checkbox('SeedSeek.toggleShowAll()',SeedSeek.config.showAll) + '<label>Show all mutations</label></div>' +
-				'<div class="listing"><label><small>(If enabled, all possible mutations will be shown, including ones for plants whose seeds you\'ve already unlocked.)</small></label></div>' +
-				'<div class="listing">' + checkbox('SeedSeek.toggleGrowingPlantsUsable()',SeedSeek.config.growingPlantsUsable) + '<label>Consider growing plants usable</label></div>' +
-				'<div class="listing"><label><small>(If enabled, any plant that\'s currently growing in your garden will be considered usable for mutations, even if you haven\'t unlocked the seed yet.)</small></label></div>' +
-				'<div class="listing">' + checkbox('SeedSeek.toggleGrowingPlantsObtained()',SeedSeek.config.growingPlantsObtained) + '<label>Consider growing plants obtained</label></div>' +
-				'<div class="listing"><label><small>(If enabled, mutations for plants that are growing in your garden will be hidden, as if the seed were already unlocked. The "show all mutations" option overrides this.)</small></label></div>'
+				'<div class="listing">' + WriteButton('removeTutorial','removeTutorialButton','Remove tutorial ON','Remove tutorial OFF') + '<label>(Remove the tutorial from the "Garden info" tooltip)</label></div>' +
+				'<div class="listing">' + WriteButton('showAll','showAllButton','Show all mutations ON','Show all mutations OFF') + '<label>(Show all possible mutations, including ones for plants whose seeds you\'ve already unlocked)</label></div>' +
+				'<div class="listing">' + WriteButton('growingPlantsUsable','growingPlantsUsableButton','Consider growing plants usable ON','Consider growing plants usable OFF') + '<label>(Consider plants that are growing in your garden to be usable for mutations, even if you haven\'t unlocked the seed yet)</label></div>' +
+				'<div class="listing">' + WriteButton('hideForGrowingPlants','hideForGrowingPlantsButton','Hide mutations for growing plants ON','Hide mutations for growing plants OFF') + '<label>(Mutations for plants that are growing in your garden will be hidden, as if the seed were already unlocked; the "show all mutations" option overrides this)</label></div>'
 			);
 		});
 		
@@ -101,10 +99,14 @@ SeedSeek.launch = function(){
 	SeedSeek.ReplaceFarmTooltip = function() {
 		if(!Game.customMinigame['Farm'].toolTooltip) Game.customMinigame['Farm'].toolTooltip = [];
 		Game.customMinigame['Farm'].toolTooltip.push(function(id, str){
-			if(id == 0)
-				return str.replace( str.substring(str.indexOf('<img src'), str.indexOf('</small>')+8), // Image and tutorial
-									'<div style="height:8px;"></div>' + SeedSeek.recipesToDisplay());
-			else return str;
+			if(id == 0) {
+				if(SeedSeek.config.removeTutorial) {
+					return str.replace( str.substring(str.indexOf('<img src'), str.indexOf('</small>')+8), // Image and tutorial
+										'<div style="height:8px;"></div>' + SeedSeek.recipesToDisplay());
+				} else {
+					return str + '<div style="height:8px;"></div>' + SeedSeek.recipesToDisplay();
+				}
+			} else return str;
 		});
 	}
 	

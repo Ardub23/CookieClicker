@@ -1,3 +1,12 @@
+v1.0.2
+– Removing the garden tutorial is now optional
+– Menu options use buttons instead of checkboxes, so they match the vanilla option buttons
+– Added an Easter egg (it's a Seed Seecret)
+
 v1.0.1
 – Probably added touchscreen support to the options menu but I don't have a way to test it
 – Made the options menu look a bit nicer
+
+== v1.0 ==
+– Initial release
+– There are no changes in this version so I'm not sure it's even important to include it in a changelog
