@@ -1,5 +1,5 @@
 //******************************************
-// Auto JQB v0.3.2
+// Auto JQB v0.3.3
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
 // CCSE and portions of this program's code
@@ -10,7 +10,7 @@ Game.Win('Third-party');
 if(AutoJQB === undefined) var AutoJQB = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 AutoJQB.name = 'Auto JQB';
-AutoJQB.version = '0.3.2';
+AutoJQB.version = '0.3.3';
 AutoJQB.GameVersion = '2.019';
 
 AutoJQB.launch = function(){
@@ -27,7 +27,8 @@ AutoJQB.launch = function(){
 		
 		AutoJQB.g = Game.ObjectsById[2].minigame;
 		AutoJQB.busy = false;
-		AutoJQB.refreshId = setInterval(AutoJQB.autoFarm, 1000*5);
+		AutoJQB.scumCount = 0;
+		AutoJQB.refreshId = setInterval(AutoJQB.autoFarm, 1000*5);	// run every 5 seconds
 		
 		
 		//***********************************
@@ -86,22 +87,6 @@ AutoJQB.launch = function(){
 		AutoJQB.config.JQBGrowthCount = num;
 	}
 	
-	AutoJQB.allOn = function(){
-		for(var i in AutoJQB.config) {
-			if(AutoJQB.config[i] === false) {
-				AutoJQB.config[i] = true;
-			}
-		}
-	}
-	
-	AutoJQB.allOff = function(){
-		for(var i in AutoJQB.config) {
-			if(AutoJQB.config[i] === true) {
-				AutoJQB.config[i] = false;
-			}
-		}
-	}
-	
 	//***********************************
 	//    Replacement
 	//***********************************
@@ -152,13 +137,14 @@ AutoJQB.launch = function(){
 				WriteButton('startSaveScum','startSaveScumButton','Auto-start savescum ON','Auto-start savescum OFF') +
 				'<label>(Begin auto-savescumming for juicy queenbeets as soon as one can appear'
 			if(AutoJQB.countJQBTiles() == 0 || AutoJQB.config.startSaveScum) {
-				optionsMenu += '; <small>if disabled, buttons to kickstart the savescumming yourself will appear here when a JQB is possible.</small>)</label></div>'
+				optionsMenu += '; <small>if disabled, buttons to kickstart the savescumming yourself will appear here when a JQB is possible</small>)</label></div>'
 			} else {
-				// 'Start auto-savescumming' buttons
 				optionsMenu += ')</label></div>';
-				optionsMenu += '<div class="listing"><a class="option" '+Game.clickStr+'="AutoJQB.mySaveString=Game.WriteSave(1); AutoJQB.desiredAmount=AutoJQB.countPlants(22)+1; AutoJQB.busy=true; AutoJQB.saveScumLoop=setInterval(AutoJQB.saveScum,10,1); PlaySound(\'snd/tick.mp3\');">Savescum 1 JQB</a> ';
-				optionsMenu += '<a class="option" '+Game.clickStr+'="AutoJQB.mySaveString=Game.WriteSave(1); AutoJQB.desiredAmount=AutoJQB.countPlants(22)+1; AutoJQB.busy=true; AutoJQB.saveScumLoop=setInterval(AutoJQB.saveScum,10); PlaySound(\'snd/tick.mp3\');">Savescum max JQBs</a> ';
-				optionsMenu += '<a class="option" '+Game.clickStr+'="clearInterval(AutoJQB.saveScumLoop); AutoJQB.busy=false; PlaySound(\'snd/tick.mp3\');"' + (AutoJQB.busy?'':' hidden') + '>Cancel savescumming</a></div>';
+				
+				// 'Start auto-savescumming' buttons
+				optionsMenu += '<div class="listing"><a class="option' + (AutoJQB.scumCount!=1&&!AutoJQB.g.freeze?'':' off') + '" id="scum1JQBButton" '+Game.clickStr+'="AutoJQB.setScum(1); PlaySound(\'snd/tick.mp3\');">Savescum 1 JQB</a> ';
+				optionsMenu += '<a class="option' + (AutoJQB.scumCount<=1&&!AutoJQB.g.freeze?'':' off') + '" id="scumMaxJQBsButton" '+Game.clickStr+'="AutoJQB.setScum(4); PlaySound(\'snd/tick.mp3\');">Savescum max JQBs</a> ';
+				optionsMenu += '<a class="option' + (AutoJQB.scumCount>0&&!AutoJQB.g.freeze?'':' off') + '" id="cancelSaveScumButton" '+Game.clickStr+'=AutoJQB.setScum(0); "PlaySound(\'snd/tick.mp3\');">Cancel savescumming</a></div>';
 			}
 			
 			optionsMenu += '<div class="listing">' +
@@ -189,7 +175,7 @@ AutoJQB.launch = function(){
 	//    Auto farm loop
 	//***********************************
 	
-	AutoJQB.autoFarm = function(){
+	AutoJQB.autoFarm = function() {
 		if(Game.Objects['Farm'].level < 9 || AutoJQB.busy || AutoJQB.g.freeze) return false;
 		
 		if(AutoJQB.countPlants() == 0) {			// Garden is empty
@@ -318,10 +304,31 @@ AutoJQB.launch = function(){
 		}
 	}
 	
+	AutoJQB.setScum = function(count) {
+		if(count === undefined || count < 0) count = 0;
+		AutoJQB.scumCount = count;
+		
+		if(count == 0) {
+			clearInterval(AutoJQB.saveScumLoop);
+			AutoJQB.busy=false;
+		} else {
+			AutoJQB.mySaveString=Game.WriteSave(1);
+			AutoJQB.desiredAmount=AutoJQB.countPlants(22)+1;
+			AutoJQB.busy=true;
+			clearInterval(AutoJQB.saveScumLoop);
+			AutoJQB.saveScumLoop=setInterval(AutoJQB.saveScum,10,(count==1)); 
+		}
+		// If garden is frozen, all three buttons are dimmed to show that they're inactive
+		l('scum1JQBButton').className = 'option' + (AutoJQB.scumCount!=1&&!AutoJQB.g.freeze?'':' off');
+		l('scumMaxJQBsButton').className = 'option' + (AutoJQB.scumCount<=1&&!AutoJQB.g.freeze?'':' off');
+		l('cancelSaveScumButton').className = 'option' + (AutoJQB.scumCount>0&&!AutoJQB.g.freeze?'':' off');
+	}
+	
 	AutoJQB.saveScum = function(justOne) {
 		if(AutoJQB.g.freeze || AutoJQB.countJQBTiles() == 0) {
 			// Stop save-scumming if garden is frozen or no more JQBs can grow
 			AutoJQB.busy = false;
+			AutoJQB.scumCount = 0;
 			clearInterval(AutoJQB.saveScumLoop);
 		} else if(AutoJQB.countPlants(22) >= AutoJQB.desiredAmount) {
 			// If we've gained a JQB, save and prepare to go for the next one
@@ -329,6 +336,7 @@ AutoJQB.launch = function(){
 			AutoJQB.mySaveString = Game.WriteSave(1);
 			
 			if(justOne) {
+				AutoJQB.scumCount = 0;
 				AutoJQB.busy = false;
 				clearInterval(AutoJQB.saveScumLoop);
 			}
