@@ -1,5 +1,5 @@
 //******************************************
-// Auto JQB v0.3.3
+// Auto JQB v0.3.4
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
 // CCSE and portions of this program's code
@@ -10,7 +10,7 @@ Game.Win('Third-party');
 if(AutoJQB === undefined) var AutoJQB = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 AutoJQB.name = 'Auto JQB';
-AutoJQB.version = '0.3.3';
+AutoJQB.version = '0.3.4';
 AutoJQB.GameVersion = '2.019';
 
 AutoJQB.launch = function(){
@@ -339,6 +339,12 @@ AutoJQB.launch = function(){
 				AutoJQB.scumCount = 0;
 				AutoJQB.busy = false;
 				clearInterval(AutoJQB.saveScumLoop);
+			} else {
+				// Pause the loop for 3 seconds
+				clearInterval(AutoJQB.saveScumLoop);
+				setTimeout(function() {
+					AutoJQB.saveScumLoop = setInterval(AutoJQB.saveScum, 10);
+				}, 3000);
 			}
 		} else if(AutoJQB.g.nextStep-Date.now() > 1000*(AutoJQB.g.soilsById[AutoJQB.g.soil].tick*60-2)) {
 			// If time is just after a AutoJQB.g tick, load the save
@@ -384,6 +390,12 @@ AutoJQB.launch = function(){
 					i--;
 				}
 			}
+			
+			// Pause the loop for 3 seconds
+			clearInterval(AutoJQB.saveScumLoop);
+			setTimeout(function() {
+				AutoJQB.saveScumLoop = setInterval(AutoJQB.saveScumJQBGrowth, 10, count);
+			}, 3000);
 		} else if(AutoJQB.g.nextStep-Date.now() > 1000*(AutoJQB.g.soilsById[AutoJQB.g.soil].tick*60-2)) {
 			// If time is just after a garden tick, load the save
 			Game.ImportSaveCode(AutoJQB.mySaveString);
