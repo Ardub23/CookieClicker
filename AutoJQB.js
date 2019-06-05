@@ -1,5 +1,5 @@
 //******************************************
-// Auto JQB v0.3.4
+// Auto JQB v0.3.5
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
 // CCSE and portions of this program's code
@@ -10,7 +10,7 @@ Game.Win('Third-party');
 if(AutoJQB === undefined) var AutoJQB = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 AutoJQB.name = 'Auto JQB';
-AutoJQB.version = '0.3.4';
+AutoJQB.version = '0.3.5';
 AutoJQB.GameVersion = '2.019';
 
 AutoJQB.launch = function(){
@@ -385,7 +385,8 @@ AutoJQB.launch = function(){
 				var me = AutoJQB.JQBLocations[i];
 				AutoJQB.JQBLocations[i][2] = AutoJQB.g.getTile(me[0],me[1])[1];
 				// If the JQB is mature or missing, remove it from consideration
-				if(AutoJQB.g.getTile(me[0],me[1])[0] != 22 || [1] >= AutoJQB.g.plants['queenbeetLump'].mature) {
+				if(AutoJQB.g.getTile(me[0],me[1])[0] != 22 ||
+						AutoJQB.g.getTile(me[0],me[1])[1] >= AutoJQB.g.plants['queenbeetLump'].mature) {
 					AutoJQB.JQBLocations.splice(i,1);
 					i--;
 				}
