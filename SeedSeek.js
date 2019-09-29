@@ -10,7 +10,7 @@ Game.Win('Third-party');
 if(SeedSeek === undefined) var SeedSeek = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 SeedSeek.name = 'Seed Seek';
-SeedSeek.version = '1.0.2';
+SeedSeek.version = '1.0.3';
 SeedSeek.GameVersion = '2.021';
 
 SeedSeek.launch = function(){
