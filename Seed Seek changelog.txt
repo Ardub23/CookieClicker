@@ -1,3 +1,6 @@
+v1.0.3
+– Compatibility with Cookie Clicker v2.021
+
 v1.0.2
 – Removing the garden tutorial is now optional
 – Menu options use buttons instead of checkboxes, so they match the vanilla option buttons
