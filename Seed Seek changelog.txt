@@ -1,10 +1,14 @@
+v1.0.4
+– Extraordinarily minor text changes
+– Compatibility with Cookie Clicker v2.022
+
 v1.0.3
 – Compatibility with Cookie Clicker v2.021
 
 v1.0.2
 – Removing the garden tutorial is now optional
 – Menu options use buttons instead of checkboxes, so they match the vanilla option buttons
-– Added an Easter egg (it's a Seed Seecret)
+– Added an easter egg (it's a Seed Seecret)
 
 v1.0.1
 – Probably added touchscreen support to the options menu but I don't have a way to test it
