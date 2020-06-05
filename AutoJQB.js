@@ -1,5 +1,5 @@
 //******************************************
-// Auto JQB v0.3.11
+// Auto JQB v0.3.12
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
 // CCSE and portions of this program's code
@@ -10,7 +10,7 @@ Game.Win('Third-party');
 if(AutoJQB === undefined) var AutoJQB = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 AutoJQB.name = 'Auto JQB';
-AutoJQB.version = '0.3.11';
+AutoJQB.version = '0.3.12';
 AutoJQB.GameVersion = '2.022';
 
 AutoJQB.launch = function(){
@@ -269,15 +269,10 @@ AutoJQB.launch = function(){
 			if(AutoJQB.config.plantElderworts && g.plants['elderwort'].unlocked &&
 					AutoJQB.canAfford(8 * AutoJQB.countPlants(22), 'elderwort') &&
 					AutoJQB.countPlants(8) == 0) {
-				
-				console.log('Attempting to plant elderworts');
-				
 				var hadGoldenSwitch = false;
 				if(AutoJQB.config.doGoldenSwitch && Game.Has('Golden switch [off]')) {
 					hadGoldenSwitch = true;
 					Game.Upgrades['Golden switch [on]'].buy();
-					
-					console.log('Turned off golden switch');
 				}
 				
 				setTimeout(function(){
@@ -286,18 +281,12 @@ AutoJQB.launch = function(){
 							// If this is an immature JQB
 							if(g.getTile(x,y)[0] == 22 &&
 									g.getTile(x,y)[1] < g.plants['queenbeetLump'].mature) {
-								
-								console.log('Found a JQB at ' + x + ',' + y);
-								
 								// Plant elderworts in the surrounding tiles
 								for(var y2 = -1; y2 <= 1; y2++) {
 									for(var x2 = -1; x2 <= 1; x2++) {
 										if((y2 != 0 || x2 != 0) &&
 												g.isTileUnlocked(x+x2,y+y2) &&
 												g.getTile(x+x2,y+y2)[0] == 0) {
-											
-											console.log('Planting at ' + (x+x2) + ',' + (y+y2));
-											
 											g.seedSelected = g.plants['elderwort'].id;
 											g.clickTile(x+x2,y+y2);
 										}
