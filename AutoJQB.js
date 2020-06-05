@@ -1,5 +1,5 @@
 //******************************************
-// Auto JQB v0.3.8
+// Auto JQB v0.3.10
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
 // CCSE and portions of this program's code
@@ -10,7 +10,7 @@ Game.Win('Third-party');
 if(AutoJQB === undefined) var AutoJQB = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 AutoJQB.name = 'Auto JQB';
-AutoJQB.version = '0.3.8';
+AutoJQB.version = '0.3.10';
 AutoJQB.GameVersion = '2.022';
 
 AutoJQB.launch = function(){
@@ -25,10 +25,13 @@ AutoJQB.launch = function(){
 		
 		AutoJQB.ReplaceGameMenu();
 		
-		AutoJQB.g = Game.ObjectsById[2].minigame;
-		AutoJQB.busy = false;
-		AutoJQB.scumCount = 0;
-		AutoJQB.refreshId = setInterval(AutoJQB.autoFarm, 1000*5);	// run every 5 seconds
+		AutoJQB.g = Game.Objects['Farm'].minigame;
+		CCSE.MinigameReplacer(function(){
+			AutoJQB.g = Game.Objects['Farm'].minigame;
+			AutoJQB.busy = false;
+			AutoJQB.scumCount = 0;
+			AutoJQB.refreshId = setInterval(AutoJQB.autoFarm, 1000*5);	// run every 5 seconds
+		}, 'Farm');
 		
 		
 		//***********************************
@@ -176,11 +179,13 @@ AutoJQB.launch = function(){
 	//***********************************
 	
 	AutoJQB.autoFarm = function() {
-		if(Game.Objects['Farm'].level < 9 || AutoJQB.busy || AutoJQB.g.freeze) return false;
+		var g = AutoJQB.g;
 		
-		if(AutoJQB.countPlants() == 0) {			// Garden is empty
-			if(AutoJQB.config.plantQBs && AutoJQB.g.plants['queenbeet'].unlocked &&
-					AutoJQB.canAfford32('queenbeet')) {
+		if(Game.Objects['Farm'].level < 9 || AutoJQB.busy || g.freeze) return false;
+		
+		if(AutoJQB.countPlants() == 0) {	// Garden is empty
+			if(AutoJQB.config.plantQBs && g.plants['queenbeet'].unlocked &&
+					AutoJQB.canAfford(32, 'queenbeet')) {
 				var hadGoldenSwitch = false;
 				if(AutoJQB.config.doGoldenSwitch && Game.Has('Golden switch [off]')) {
 					hadGoldenSwitch = true;
@@ -190,9 +195,9 @@ AutoJQB.launch = function(){
 				setTimeout(function() {	// Wait 500 ms to ensure that golden switch CPS change registers
 					for(var y = 0; y < 6; y++) {
 						for(var x = 0; x < 6; x++) {
-							if((x!=1&&x!=4) || (y!=1&&y!=4)) {
-								AutoJQB.g.seedSelected = AutoJQB.g.plants['queenbeet'].id;
-								AutoJQB.g.clickTile(x,y);
+							if((x!=1 && x!=4) || (y!=1 && y!=4)) {
+								g.seedSelected = g.plants['queenbeet'].id;
+								g.clickTile(x,y);
 							}
 						}
 					}
@@ -216,12 +221,13 @@ AutoJQB.launch = function(){
 			if(AutoJQB.config.switchFertilizer)
 				l('gardenSoil-1').click();
 		} else if(AutoJQB.countPlants(22) > 0) {	// Waiting for JQBs to mature
+			// Harvest mature JQBs
 			if(AutoJQB.config.harvestJQBs) {
 				for(var y = 1; y < 5; y++) {
 					for(var x = 1; x < 5; x++) {
-						var me = AutoJQB.g.getTile(x,y);
-						if(me[0] == 22 && me[1] >= AutoJQB.g.plants['queenbeetLump'].mature) {
-							AutoJQB.g.clickTile(x,y);
+						var me = g.getTile(x,y);
+						if(me[0] == 22 && me[1] >= g.plants['queenbeetLump'].mature) {
+							g.clickTile(x,y);
 						}
 					}
 				}
@@ -245,10 +251,10 @@ AutoJQB.launch = function(){
 				setTimeout(function() {
 					for(var y = 0; y < 6; y++) {
 						for(var x = 0; x < 6; x++) {
-							var me = AutoJQB.g.getTile(x,y);
+							var me = g.getTile(x,y);
 							
-							if(me[0] == 21 && me[1] >= AutoJQB.g.plants['queenbeet'].mature) {
-								AutoJQB.g.clickTile(x,y);
+							if(me[0] == 21 && me[1] >= g.plants['queenbeet'].mature) {
+								g.clickTile(x,y);
 							}
 						}
 					}
@@ -260,8 +266,9 @@ AutoJQB.launch = function(){
 			}
 			
 			// Plant elderworts
-			if(AutoJQB.config.plantElderworts && AutoJQB.g.plants['elderwort'].unlocked &&
-					AutoJQB.canAfford32('elderwort') && AutoJQB.countPlants(8) == 0) {
+			if(AutoJQB.config.plantElderworts && g.plants['elderwort'].unlocked &&
+					AutoJQB.canAfford(8 * AutoJQB.countPlants(22), 'elderwort') &&
+					AutoJQB.countPlants(8) == 0) {
 				var hadGoldenSwitch = false;
 				if(AutoJQB.config.doGoldenSwitch && Game.Has('Golden switch [off]')) {
 					hadGoldenSwitch = true;
@@ -269,11 +276,20 @@ AutoJQB.launch = function(){
 				}
 				
 				setTimeout(function(){
-					for(var y = 0; y < 6; y++) {
-						for(var x = 0; x < 6; x++) {
-							if(AutoJQB.g.getTile(x,y)[0] == 0 && ((x!=1&&x!=4) || (y!=1&&y!=4))) {
-								AutoJQB.g.seedSelected = AutoJQB.g.plants['elderwort'].id;
-								AutoJQB.g.clickTile(x,y);
+					for(var y = 1; y < 5; y++) {
+						for(var x = 1; x < 5; x++) {
+							// If this is an immature JQB
+							if(g.getTile(x,y)[0] == 22 &&
+									g.getTile(x,y)[1] < g.plants['queenbeetLump'].mature) {
+								// Plant elderworts in the surrounding tiles
+								g.seedSelected = g.plants['elderwort'].id;
+								for(var y2 = -1; y2 <= 1; y2++) {
+									for(var x2 = -1; y2 <= 1; x2++) {
+										if((y2 != 0 || x2 != 0) && g.getTile(x,y)[0] == 0) {
+											g.clickTile(x+x2,y+y2);
+										}
+									}
+								}
 							}
 						}
 					}
@@ -287,13 +303,17 @@ AutoJQB.launch = function(){
 			// Begin JQB growth savescumming
 			if(AutoJQB.config.JQBGrowthCount > 0) {
 				if(AutoJQB.JQBLocations === undefined) {
+					// This is a list of JQBs in the garden;
+					// each element is an array of the form [x, y, age]
 					AutoJQB.JQBLocations = [];
 				}
 				if(AutoJQB.JQBLocations.length == 0) {
 					for(var y = 1; y < 5; y++) {
 						for(var x = 1; x < 5; x++) {
-							if(AutoJQB.g.getTile(x,y)[0] == 22 && AutoJQB.g.getTile(x,y)[1] < AutoJQB.g.plants['queenbeetLump'].mature) {
-								AutoJQB.JQBLocations.push([x,y, AutoJQB.g.getTile(x,y)[1]]);
+							// If this is an immature JQB
+							if(g.getTile(x,y)[0] == 22 &&
+									g.getTile(x,y)[1] < g.plants['queenbeetLump'].mature) {
+								AutoJQB.JQBLocations.push([x, y, g.getTile(x,y)[1]]);
 							}
 						}
 					}
@@ -319,13 +339,18 @@ AutoJQB.launch = function(){
 			AutoJQB.saveScumLoop=setInterval(AutoJQB.saveScum,10,(count==1)); 
 		}
 		// If garden is frozen, all three buttons are dimmed to show that they're inactive
-		l('scum1JQBButton').className = 'option' + (AutoJQB.scumCount!=1&&!AutoJQB.g.freeze?'':' off');
-		l('scumMaxJQBsButton').className = 'option' + (AutoJQB.scumCount<=1&&!AutoJQB.g.freeze?'':' off');
-		l('cancelSaveScumButton').className = 'option' + (AutoJQB.scumCount>0&&!AutoJQB.g.freeze?'':' off');
+		l('scum1JQBButton').className = 'option' +
+				(AutoJQB.scumCount!=1&&!AutoJQB.g.freeze?'':' off');
+		l('scumMaxJQBsButton').className = 'option' +
+				(AutoJQB.scumCount<=1&&!AutoJQB.g.freeze?'':' off');
+		l('cancelSaveScumButton').className = 'option' +
+				(AutoJQB.scumCount>0&&!AutoJQB.g.freeze?'':' off');
 	}
 	
 	AutoJQB.saveScum = function(justOne) {
-		if(AutoJQB.g.freeze || AutoJQB.countJQBTiles() == 0) {
+		var g = AutoJQB.g;
+		
+		if(g.freeze || AutoJQB.countJQBTiles() == 0) {
 			// Stop save-scumming if garden is frozen or no more JQBs can grow
 			AutoJQB.busy = false;
 			AutoJQB.scumCount = 0;
@@ -346,19 +371,21 @@ AutoJQB.launch = function(){
 					AutoJQB.saveScumLoop = setInterval(AutoJQB.saveScum, 10);
 				}, 3000);
 			}
-		} else if(AutoJQB.g.nextStep-Date.now() > 1000*(AutoJQB.g.soilsById[AutoJQB.g.soil].tick*60-2)) {
-			// If time is just after a AutoJQB.g tick, load the save
+		} else if(g.nextStep-Date.now() > 1000*(g.soilsById[g.soil].tick*60-2)) {
+			// If time is just after a garden tick, load the save
 			Game.ImportSaveCode(AutoJQB.mySaveString);
-		} else if(AutoJQB.g.nextStep-Date.now() > 500 && AutoJQB.g.nextStep-Date.now() < 1000) {
+		} else if(g.nextStep-Date.now() > 500 && g.nextStep-Date.now() < 1000) {
 			// Save again just before a garden tick
 			AutoJQB.mySaveString = Game.WriteSave(1);
 		}
 	}
 	
 	AutoJQB.saveScumJQBGrowth = function(count) {
+		var g = AutoJQB.g;
+		
 		if(!count) count = 1;
 		
-		if(AutoJQB.g.freeze || AutoJQB.JQBLocations.length == 0 || AutoJQB.config.JQBGrowthCount == 0) {
+		if(g.freeze || AutoJQB.JQBLocations.length == 0 || AutoJQB.config.JQBGrowthCount == 0) {
 			// Stop savescumming if garden is frozen, no JQBs are immature, or option is disabled
 			clearInterval(AutoJQB.saveScumLoop);
 			AutoJQB.busy = false;
@@ -371,7 +398,7 @@ AutoJQB.launch = function(){
 		// Count # of JQBs that have grown
 		for(var i = 0; i < AutoJQB.JQBLocations.length; i++) {
 			var me = AutoJQB.JQBLocations[i];
-			if(AutoJQB.g.getTile(me[0],me[1])[1] > me[2]) {
+			if(g.getTile(me[0],me[1])[1] > me[2]) {
 				numGrown++;
 			}
 		}
@@ -380,13 +407,13 @@ AutoJQB.launch = function(){
 		if(numGrown >= Math.min(AutoJQB.JQBLocations.length, count)) {
 			AutoJQB.mySaveString = Game.WriteSave(1);
 			
-			// Update JQBLocations
+			// Update ages in JQBLocations
 			for(var i = 0; i < AutoJQB.JQBLocations.length; i++) {
 				var me = AutoJQB.JQBLocations[i];
-				AutoJQB.JQBLocations[i][2] = AutoJQB.g.getTile(me[0],me[1])[1];
+				AutoJQB.JQBLocations[i][2] = g.getTile(me[0],me[1])[1];
 				// If the JQB is mature or missing, remove it from consideration
-				if(AutoJQB.g.getTile(me[0],me[1])[0] != 22 ||
-						AutoJQB.g.getTile(me[0],me[1])[1] >= AutoJQB.g.plants['queenbeetLump'].mature) {
+				if(g.getTile(me[0],me[1])[0] != 22 ||
+						g.getTile(me[0],me[1])[1] >= g.plants['queenbeetLump'].mature) {
 					AutoJQB.JQBLocations.splice(i,1);
 					i--;
 				}
@@ -397,10 +424,10 @@ AutoJQB.launch = function(){
 			setTimeout(function() {
 				AutoJQB.saveScumLoop = setInterval(AutoJQB.saveScumJQBGrowth, 10, count);
 			}, 3000);
-		} else if(AutoJQB.g.nextStep-Date.now() > 1000*(AutoJQB.g.soilsById[AutoJQB.g.soil].tick*60-2)) {
+		} else if(g.nextStep-Date.now() > 1000*(g.soilsById[g.soil].tick*60-2)) {
 			// If time is just after a garden tick, load the save
 			Game.ImportSaveCode(AutoJQB.mySaveString);
-		} else if(AutoJQB.g.nextStep-Date.now() > 500 && AutoJQB.g.nextStep-Date.now() < 1000) {
+		} else if(g.nextStep-Date.now() > 500 && g.nextStep-Date.now() < 1000) {
 			// Save again just before a garden tick
 			AutoJQB.mySaveString = Game.WriteSave(1);
 		}
@@ -411,11 +438,13 @@ AutoJQB.launch = function(){
 	//***********************************
 	
 	AutoJQB.countPlants = function(id) {
+		var g = AutoJQB.g;
+		
 		count = 0;
 		for (var y=0;y<6;y++){
 			for (var x=0;x<6;x++){
-				if (AutoJQB.g.isTileUnlocked(x,y)) {
-					if((!id && AutoJQB.g.getTile(x,y)[0] > 0) || (id && AutoJQB.g.getTile(x,y)[0] == id)){
+				if (g.isTileUnlocked(x,y)) {
+					if((!id && g.getTile(x,y)[0] > 0) || (id && g.getTile(x,y)[0] == id)){
 						count++;
 					}
 				}
@@ -425,25 +454,29 @@ AutoJQB.launch = function(){
 	}
 	
 	AutoJQB.countJQBTiles = function(includeImmature) {
+		if(AutoJQB.g === undefined) return false;
+		
+		var g = AutoJQB.g;
+		
 		var possibleTiles = 0;
 		for(var y = 1; y < 5; y++) {
 			for(var x = 1; x < 5; x++) {
-				if(AutoJQB.g.isTileUnlocked(x,y)) {
+				if(g.isTileUnlocked(x,y)) {
 					var neighborQBs = 0;
 					for(var i = -1; i <= 1; i++) {
 						for(var j = -1; j <= 1; j++) {
-							if(AutoJQB.g.isTileUnlocked(x+i,y+j) && !(i==0&&j==0)) {
-								var neigh = AutoJQB.g.getTile(x+i,y+j);
-								if(neigh[0] == 21 && (includeImmature || neigh[1] >= AutoJQB.g.plants['queenbeet'].mature))
+							if(g.isTileUnlocked(x+i,y+j) && !(i==0&&j==0)) {
+								var neigh = g.getTile(x+i,y+j);
+								if(neigh[0] == 21 && (includeImmature || neigh[1] >= g.plants['queenbeet'].mature))
 									neighborQBs++;
 							}
 						}
 					}
-					if(neighborQBs >= 8 && AutoJQB.g.getTile(x,y)[0] != 22) {
+					if(neighborQBs >= 8 && g.getTile(x,y)[0] != 22) {
 						if(AutoJQB.config.clearJQBTiles) {
-							AutoJQB.g.harvest(x,y);
+							g.harvest(x,y);
 						}
-						if(AutoJQB.g.getTile(x,y)[0] == 0) {
+						if(g.getTile(x,y)[0] == 0) {
 							possibleTiles++;
 						}
 					}
@@ -453,22 +486,29 @@ AutoJQB.launch = function(){
 		return possibleTiles;
 	}
 	
-	AutoJQB.canAfford32 = function(plant) {
+	AutoJQB.canAfford = function(count, plant) {
+		var g = AutoJQB.g;
+		
+		// If golden switch is already off or won't be turned off, use current CPS
 		if(!Game.Has('Golden switch [off]') || !AutoJQB.config.doGoldenSwitch)
-			return (Game.cookies >= 32 * (AutoJQB.g.plants[plant].cost*60*Game.cookiesPs));
+			return (Game.cookies >= count * (g.plants[plant].cost*60*Game.cookiesPs));
 		
 		var cost = Game.cookiesPs * 60 * 60;	// Cost of turning GS off
 		
-		var goldenSwitchMult=1.5;
-		if (Game.Has('Residual luck'))
+		var goldenSwitchMult = 1.5;
+		if(Game.Has('Residual luck'))
 		{
-			var upgrades=Game.goldenCookieUpgrades;
-			for (var i in upgrades) {if (Game.Has(upgrades[i])) goldenSwitchMult+=0.1;}
+			var upgrades = Game.goldenCookieUpgrades;
+			for(var i in upgrades) {
+				if(Game.Has(upgrades[i]))
+					goldenSwitchMult += 0.1;
+			}
 		}
 		
+		// CPS after disabling golden switch
 		var modifiedCPS = Game.cookiesPs / goldenSwitchMult;
 		
-		cost += 32 * (AutoJQB.g.plants[plant].cost*60*modifiedCPS);	// Cost of planting 32 after turning GS off
+		cost += count * (g.plants[plant].cost*60*modifiedCPS);	// Cost of planting after turning GS off
 		cost += modifiedCPS * 60 * 60;	// Cost of turning GS back on
 		
 		return (Game.cookies >= cost);
@@ -481,11 +521,13 @@ AutoJQB.launch = function(){
 	AutoJQB.debug = {};
 	
 	AutoJQB.debug.fastFertilizer = function(enable) {
-		// Because turbo-charged soil is too fast
-		AutoJQB.g.soils['fertilizer'].tick = (enable)?0.125:3;
+		// Because turbo-charged soil is too fast; tick every 7.5 seconds
+		var g = AutoJQB.g;
 		
-		if(AutoJQB.g.nextStep > Date.now() + AutoJQB.g.soilsById[AutoJQB.g.soil].tick*1000*60) {
-			AutoJQB.g.nextStep = Date.now() + AutoJQB.g.soilsById[AutoJQB.g.soil].tick*1000*60;
+		g.soils['fertilizer'].tick = (enable)?0.125:3;
+		
+		if(g.nextStep > Date.now() + g.soilsById[g.soil].tick*1000*60) {
+			g.nextStep = Date.now() + g.soilsById[g.soil].tick*1000*60;
 			AutoJQB.mySaveString = Game.WriteSave(1);	// So the change doesn't get overwritten if a savescum loop is active
 		}
 	}
