@@ -1,5 +1,5 @@
 //******************************************
-// Auto JQB v0.3.12
+// Auto JQB v0.3.14
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
 // CCSE and portions of this program's code
@@ -10,7 +10,7 @@ Game.Win('Third-party');
 if(AutoJQB === undefined) var AutoJQB = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 AutoJQB.name = 'Auto JQB';
-AutoJQB.version = '0.3.12';
+AutoJQB.version = '0.3.14';
 AutoJQB.GameVersion = '2.022';
 
 AutoJQB.launch = function(){
@@ -231,7 +231,9 @@ AutoJQB.launch = function(){
 						}
 					}
 				}
-				if(AutoJQB.countPlants(8) == AutoJQB.countPlants()) {	// All remaining plants are elderworts
+				if(AutoJQB.countPlants(8) + AutoJQB.countPlants(13)
+						== AutoJQB.countPlants()) {
+					// All remaining plants are elderworts or meddleweeds
 					Game.Objects['Farm'].minigame.harvestAll();
 					return 1;
 				}
@@ -359,24 +361,25 @@ AutoJQB.launch = function(){
 			clearInterval(AutoJQB.saveScumLoop);
 		} else if(AutoJQB.countPlants(22) >= AutoJQB.desiredAmount) {
 			// If we've gained a JQB, save and prepare to go for the next one
-			AutoJQB.desiredAmount = AutoJQB.countPlants(22) + 1;
 			AutoJQB.mySaveString = Game.WriteSave(1);
 			
-			if(justOne) {
+			if(justOne || AutoJQB.countJQBTiles() == 0) {
+				// Done save scumming
 				AutoJQB.scumCount = 0;
 				AutoJQB.busy = false;
 				clearInterval(AutoJQB.saveScumLoop);
 			} else {
+				AutoJQB.desiredAmount = AutoJQB.countPlants(22) + 1;
 				// Pause the loop for 3 seconds
 				clearInterval(AutoJQB.saveScumLoop);
 				setTimeout(function() {
 					AutoJQB.saveScumLoop = setInterval(AutoJQB.saveScum, 10);
 				}, 3000);
 			}
-		} else if(g.nextStep-Date.now() > 1000*(g.soilsById[g.soil].tick*60-2)) {
+		} else if(g.nextStep - Date.now() > 1000*(g.soilsById[g.soil].tick*60-2)) {
 			// If time is just after a garden tick, load the save
 			Game.ImportSaveCode(AutoJQB.mySaveString);
-		} else if(g.nextStep-Date.now() > 500 && g.nextStep-Date.now() < 1000) {
+		} else if(g.nextStep - Date.now() > 500 && g.nextStep-Date.now() < 1000) {
 			// Save again just before a garden tick
 			AutoJQB.mySaveString = Game.WriteSave(1);
 		}
@@ -522,7 +525,7 @@ AutoJQB.launch = function(){
 	
 	AutoJQB.debug = {};
 	
-	AutoJQB.debug.fastFertilizer = function(enable) {
+	AutoJQB.debug.setFastFertilizer = function(enable) {
 		// Because turbo-charged soil is too fast; tick every 7.5 seconds
 		var g = AutoJQB.g;
 		
@@ -535,13 +538,40 @@ AutoJQB.launch = function(){
 	}
 	
 	AutoJQB.debug.saveGarden = function() {
-		AutoJQB.config.debugGardenSave = Game.Objects['Farm'].minigame.plot;
+		var g = AutoJQB.g;
+		
+		AutoJQB.config.debugGardenSave = [];
+		for(var row = 0; row < g.plot.length; row++) {
+			AutoJQB.config.debugGardenSave.push([]);
+			for(var tile = 0; tile < g.plot[row].length; tile++) {
+				AutoJQB.config.debugGardenSave[row].push([]);
+				for(var i = 0; i < g.plot[row][tile].length; i++) {
+					AutoJQB.config.debugGardenSave[row][tile].push(g.plot[row][tile][i]);
+				}
+			}
+		}
 	}
 	
 	// After loading the farm, changes won't be immediately visible; save and reload to see them.
 	AutoJQB.debug.loadGarden = function() {
-		if(AutoJQB.config.debugGardenSave)
-			Game.Objects['Farm'].minigame.plot = AutoJQB.config.debugGardenSave;
+		if(!AutoJQB.config.debugGardenSave) return;
+		
+		var dgs = AutoJQB.config.debugGardenSave;
+		var g = AutoJQB.g;
+		
+		for(var row = 0; row < dgs.length; row++) {
+			for(var tile = 0; tile < dgs[row].length; tile++) {
+				g.plot[row][tile] = [];
+				for(var i = 0; i < dgs[row][tile].length; i++) {
+					g.plot[row][tile].push(dgs[row][tile][i]);
+				}
+			}
+		}
+		
+		if(AutoJQB.countPlants() != 0) {
+			console.log('If the garden appears unchanged, this is a visual bug; ' +
+					'save and reload to fix it.')
+		}
 	}
 	
 	
