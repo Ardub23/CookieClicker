@@ -23,7 +23,7 @@ SeedSeek.launch = function(){
 		CCSE.customLoad.push(SeedSeek.loadConfig);
 		CCSE.customSave.push(SeedSeek.saveConfig);
 		
-		SeedSeek.ReplaceFarmTooltip();
+		CCSE.MinigameReplacer(SeedSeek.ReplaceFarmTooltip, 'Farm');
 		SeedSeek.ReplaceGameMenu();
 		
 		
