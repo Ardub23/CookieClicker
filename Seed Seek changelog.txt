@@ -1,3 +1,6 @@
+v1.0.5
+– Now uses CCSE.MinigameReplacer, because I can't remember if I already did what that does
+
 v1.0.4
 – Extraordinarily minor text changes
 – Compatibility with Cookie Clicker v2.022
