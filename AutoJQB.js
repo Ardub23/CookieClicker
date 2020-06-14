@@ -494,15 +494,18 @@ AutoJQB.launch = function(){
 	AutoJQB.canAfford = function(count, plant) {
 		var g = AutoJQB.g;
 		
-		// If golden switch is already off or won't be turned off, use current CPS
-		if(!Game.Has('Golden switch [off]') || !AutoJQB.config.doGoldenSwitch)
+		if(!Game.Has('Golden switch [off]') // GS is off (or not even available)
+				|| !AutoJQB.config.doGoldenSwitch) {
+			// Use current CpS to determine cost
 			return (Game.cookies >= count * (g.plants[plant].cost*60*Game.cookiesPs));
+		}
 		
-		var cost = Game.cookiesPs * 60 * 60;	// Cost of turning GS off
+		// Calculate cost based on lower sans-GS CpS
+		var cost = Game.Upgrades['Golden switch [off]'].getPrice();	// Cost of turning GS off
 		
+		// Determine how much the GS is affecting CpS
 		var goldenSwitchMult = 1.5;
-		if(Game.Has('Residual luck'))
-		{
+		if(Game.Has('Residual luck')) {
 			var upgrades = Game.goldenCookieUpgrades;
 			for(var i in upgrades) {
 				if(Game.Has(upgrades[i]))
@@ -510,12 +513,14 @@ AutoJQB.launch = function(){
 			}
 		}
 		
-		// CPS after disabling golden switch
 		var modifiedCPS = Game.cookiesPs / goldenSwitchMult;
+		// Cost of planting after turning GS off
+		cost += count * (g.plants[plant].cost*60*modifiedCPS);
 		
-		cost += count * (g.plants[plant].cost*60*modifiedCPS);	// Cost of planting after turning GS off
-		cost += modifiedCPS * 60 * 60;	// Cost of turning GS back on
+		// Cost of turning GS back on
+		cost += Game.Upgrades['Golden switch [off]'].getPrice() / goldenSwitchMult;
 		
+		// We're ignoring the possibility that it might be cheaper to leave the GS on
 		return (Game.cookies >= cost);
 	}
 	
@@ -552,7 +557,8 @@ AutoJQB.launch = function(){
 		}
 	}
 	
-	// After loading the farm, changes won't be immediately visible; save and reload to see them.
+	// After loading the farm, changes won't be immediately visible;
+	// save and reload to see them.
 	AutoJQB.debug.loadGarden = function() {
 		if(!AutoJQB.config.debugGardenSave) return;
 		
