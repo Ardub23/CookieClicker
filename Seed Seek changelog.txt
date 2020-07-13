@@ -1,3 +1,6 @@
+v1.0.6
+– Seed list now always displays below Auto JQB's status line, if present
+
 v1.0.5
 – Now uses CCSE.MinigameReplacer, because I can't remember if I already did what that does
 

@@ -1,5 +1,5 @@
 //***********************************************
-// Seed Seek v1.0.5
+// Seed Seek v1.0.6
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
 // CCSE and some portions of this program's code
@@ -10,7 +10,7 @@ Game.Win('Third-party');
 if(SeedSeek === undefined) var SeedSeek = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 SeedSeek.name = 'Seed Seek';
-SeedSeek.version = '1.0.5';
+SeedSeek.version = '1.0.6';
 SeedSeek.GameVersion = '2.022';
 
 SeedSeek.launch = function(){
@@ -100,13 +100,29 @@ SeedSeek.launch = function(){
 		if(!Game.customMinigame['Farm'].toolTooltip) Game.customMinigame['Farm'].toolTooltip = [];
 		Game.customMinigame['Farm'].toolTooltip.push(function(id, str){
 			if(id == 0) {
-				if(SeedSeek.config.removeTutorial) {
-					return str.replace( str.substring(str.indexOf('<img src'), str.indexOf('</small>')+8), // Image and tutorial
-										'<div style="height:8px;"></div>' + SeedSeek.recipesToDisplay());
-				} else {
-					return str + '<div style="height:8px;"></div>' + SeedSeek.recipesToDisplay();
+				var listAdded = false;
+				
+				if(str.indexOf('<!--EndAJQBStatus-->') > 0) {
+					// Add list immediately after Auto JQB status, if present
+					str = str.substring(0, str.indexOf('<!--EndAJQBStatus-->')+20) +
+							'<div class="line" style="clear:both;"></div>'
+							+ SeedSeek.recipesToDisplay() +
+							str.substring(str.indexOf('<!--EndAJQBStatus-->')+20);
+					listAdded = true;
 				}
-			} else return str;
+				
+				if(SeedSeek.config.removeTutorial) {
+					str = str.substring(0, str.indexOf('<img src')) + // everything before the image
+							(listAdded? '' : SeedSeek.recipesToDisplay()) +
+							str.substring(str.indexOf('</small>')+8); // everything after the tutorial
+				} else if(!listAdded) {
+					str = str.substring(0, str.indexOf('</small>')+8) +
+							'<div style="clear:both;" class="line"></div>' +
+							SeedSeek.recipesToDisplay() +
+							str.substring(str.indexOf('</small>')+8);
+				}
+			}
+			return str;
 		});
 	}
 	
@@ -115,7 +131,8 @@ SeedSeek.launch = function(){
 	//***********************************
 	
 	SeedSeek.recipesToDisplay = function(){
-		var recipesList = '<div width="100%"><b>Possible mutations:</b><br/>';
+		var recipesList = '<!--BeginSeedSeekList-->' +
+				'<div width="100%"><b>Possible mutations:</b><br/>';
 		var listedARecipe = false;
 		
 		var garden = Game.Objects['Farm'].minigame;
@@ -199,7 +216,7 @@ SeedSeek.launch = function(){
 			recipesList += '<b>None.</b><br/>';
 		}
 		
-		return recipesList;
+		return recipesList + '<!--EndSeedSeekList-->';
 	}
 	
 	SeedSeek.addPlantInfo = function(){
