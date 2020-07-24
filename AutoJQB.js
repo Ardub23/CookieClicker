@@ -1,5 +1,5 @@
 //******************************************
-// Auto JQB v0.4.0
+// Auto JQB v0.4.1
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
 // CCSE and portions of this program's code
@@ -10,7 +10,7 @@ Game.Win('Third-party');
 if(AutoJQB === undefined) var AutoJQB = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 AutoJQB.name = 'Auto JQB';
-AutoJQB.version = '0.4.0';
+AutoJQB.version = '0.4.1';
 AutoJQB.GameVersion = '2.022';
 
 AutoJQB.launch = function(){
@@ -253,9 +253,9 @@ AutoJQB.launch = function(){
 			if(AutoJQB.config.plantQBs && g.plants['queenbeet'].unlocked &&
 					AutoJQB.canAfford(32, 'queenbeet')) {
 				AutoJQB.status = 'Planting queenbeets';
-				var hadGoldenSwitch = false;
+				AutoJQB.hadGoldenSwitch = false;
 				if(AutoJQB.config.doGoldenSwitch && Game.Has('Golden switch [off]')) {
-					hadGoldenSwitch = true;
+					AutoJQB.hadGoldenSwitch = true;
 					Game.Upgrades['Golden switch [on]'].buy();
 				}
 				
@@ -269,7 +269,7 @@ AutoJQB.launch = function(){
 						}
 					}
 					
-					if(hadGoldenSwitch) {
+					if(AutoJQB.hadGoldenSwitch) {
 						Game.Upgrades['Golden switch [off]'].buy();
 					}
 				}, 500);
@@ -305,8 +305,7 @@ AutoJQB.launch = function(){
 						}
 					}
 				}
-				if(AutoJQB.countPlants(8) + AutoJQB.countPlants(13)
-						== AutoJQB.countPlants()) {
+				if(AutoJQB.countPlants(8) + AutoJQB.countPlants(13) == AutoJQB.countPlants()) {
 					// All remaining plants are elderworts or meddleweeds
 					Game.Objects['Farm'].minigame.harvestAll();
 					return 1;
@@ -318,9 +317,10 @@ AutoJQB.launch = function(){
 			
 			// Harvest queenbeets (their purpose is already served)
 			if(AutoJQB.config.harvestQBs) {
-				var hadGoldenSwitch = true;
+				AutoJQB.hadGoldenSwitch = true;
 				if(AutoJQB.config.doGoldenSwitch && Game.Has('Golden switch [on]')) {
-					hadGoldenSwitch = false;
+					// Turn GS on before harvesting queenbeets
+					AutoJQB.hadGoldenSwitch = false; // to turn it back off later
 					Game.Upgrades['Golden switch [off]'].buy();
 				}
 				
@@ -335,8 +335,8 @@ AutoJQB.launch = function(){
 						}
 					}
 					
-					if(!hadGoldenSwitch) {
-						Game.Upgrades['Golden switch [off]'].buy();
+					if(!AutoJQB.hadGoldenSwitch) {
+						Game.Upgrades['Golden switch [on]'].buy();
 					}
 				}, 500);
 			}
@@ -345,9 +345,9 @@ AutoJQB.launch = function(){
 			if(AutoJQB.config.plantElderworts && g.plants['elderwort'].unlocked &&
 					AutoJQB.canAfford(8 * AutoJQB.countPlants(22), 'elderwort') &&
 					AutoJQB.countPlants(8) == 0) {
-				var hadGoldenSwitch = false;
+				AutoJQB.hadGoldenSwitch = false;
 				if(AutoJQB.config.doGoldenSwitch && Game.Has('Golden switch [off]')) {
-					hadGoldenSwitch = true;
+					AutoJQB.hadGoldenSwitch = true;
 					Game.Upgrades['Golden switch [on]'].buy();
 				}
 				
@@ -372,7 +372,7 @@ AutoJQB.launch = function(){
 						}
 					}
 					
-					if(hadGoldenSwitch) {
+					if(AutoJQB.hadGoldenSwitch) {
 						Game.Upgrades['Golden switch [off]'].buy();
 					}
 				}, 500);
@@ -469,7 +469,8 @@ AutoJQB.launch = function(){
 	AutoJQB.saveScumJQBGrowth = function() {
 		var g = AutoJQB.g;
 		
-		if(g.freeze || AutoJQB.JQBLocations.length == 0 || AutoJQB.config.JQBGrowthCount == 0) {
+		if(g.freeze || AutoJQB.JQBLocations.length == 0 || AutoJQB.countPlants(22) == 0 ||
+				AutoJQB.config.JQBGrowthCount == 0) {
 			// Stop savescumming if garden is frozen, no JQBs are immature, or option is disabled
 			clearInterval(AutoJQB.saveScumLoop);
 			AutoJQB.busy = false;
