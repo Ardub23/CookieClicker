@@ -1,3 +1,7 @@
+v0.4.2
+– Checks for mature JQBs earlier in the loop, so it should handle some fringe garden states better
+– Bugfix: No longer turns golden switch on and off to harvest queenbeets when there are none
+
 v0.4.1
 – Bugfix: No longer turns golden switch on when harvesting queenbeets if 'Manage golden switch' is off
 

@@ -1,5 +1,5 @@
 //******************************************
-// Auto JQB v0.4.1
+// Auto JQB v0.4.2
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
 // CCSE and portions of this program's code
@@ -10,7 +10,7 @@ Game.Win('Third-party');
 if(AutoJQB === undefined) var AutoJQB = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 AutoJQB.name = 'Auto JQB';
-AutoJQB.version = '0.4.1';
+AutoJQB.version = '0.4.2';
 AutoJQB.GameVersion = '2.022';
 
 AutoJQB.launch = function(){
@@ -244,6 +244,22 @@ AutoJQB.launch = function(){
 		if(Game.Objects['Farm'].level < 9 || AutoJQB.busy || g.freeze)
 			return false;
 		
+		// Harvest mature JQBs
+		if(AutoJQB.config.harvestJQBs) {
+			for(var y = 1; y < 5; y++) {
+				for(var x = 1; x < 5; x++) {
+					var me = g.getTile(x,y);
+					if(me[0] == 22 && me[1] >= g.plants['queenbeetLump'].mature) {
+						g.clickTile(x,y);
+					}
+				}
+			}
+			if(AutoJQB.countPlants(8) + AutoJQB.countPlants(13) == AutoJQB.countPlants()) {
+				// All remaining plants are elderworts or meddleweeds
+				Game.Objects['Farm'].minigame.harvestAll();
+			}
+		}
+		
 		if(AutoJQB.countPlants() == 0) {	// Garden is empty
 			AutoJQB.status = 'Waiting for queenbeets to be ' +
 					(!g.plants['queenbeet'].unlocked? 'unlocked'
@@ -292,31 +308,15 @@ AutoJQB.launch = function(){
 			if(AutoJQB.config.switchFertilizer)
 				l('gardenSoil-1').click();
 		} else if(AutoJQB.countPlants(22) > 0) {	// Waiting for JQBs to mature
-			AutoJQB.status = 'Waiting for JQBs to mature';
-			
-			// Harvest mature JQBs
-			if(AutoJQB.config.harvestJQBs) {
-				AutoJQB.status = 'Waiting to harvest JQBs once mature';
-				for(var y = 1; y < 5; y++) {
-					for(var x = 1; x < 5; x++) {
-						var me = g.getTile(x,y);
-						if(me[0] == 22 && me[1] >= g.plants['queenbeetLump'].mature) {
-							g.clickTile(x,y);
-						}
-					}
-				}
-				if(AutoJQB.countPlants(8) + AutoJQB.countPlants(13) == AutoJQB.countPlants()) {
-					// All remaining plants are elderworts or meddleweeds
-					Game.Objects['Farm'].minigame.harvestAll();
-					return 1;
-				}
-			}
+			AutoJQB.status = (AutoJQB.config.harvestJQBs)
+					? 'Waiting to harvest JQBs once mature'
+					: 'Waiting for JQBs to mature';
 			
 			if(AutoJQB.config.switchFertilizer)
 				l('gardenSoil-1').click();
 			
 			// Harvest queenbeets (their purpose is already served)
-			if(AutoJQB.config.harvestQBs) {
+			if(AutoJQB.config.harvestQBs && AutoJQB.countPlants(21) > 0) {
 				AutoJQB.hadGoldenSwitch = true;
 				if(AutoJQB.config.doGoldenSwitch && Game.Has('Golden switch [on]')) {
 					// Turn GS on before harvesting queenbeets
