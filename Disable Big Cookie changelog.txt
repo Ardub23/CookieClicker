@@ -1,3 +1,6 @@
+v1.0.5
+– Compatibility with Cookie Clicker v2.029
+
 v1.0.4
 – Compatibility with Cookie Clicker v2.022
 

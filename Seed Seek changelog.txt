@@ -1,3 +1,6 @@
+v1.0.7
+– Compatibility with Cookie Clicker v2.029
+
 v1.0.6
 – Seed list now always displays below Auto JQB's status line, if present
 

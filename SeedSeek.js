@@ -1,5 +1,5 @@
 //***********************************************
-// Seed Seek v1.0.6
+// Seed Seek v1.0.7
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
 // CCSE and some portions of this program's code
@@ -10,8 +10,8 @@ Game.Win('Third-party');
 if(SeedSeek === undefined) var SeedSeek = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 SeedSeek.name = 'Seed Seek';
-SeedSeek.version = '1.0.6';
-SeedSeek.GameVersion = '2.022';
+SeedSeek.version = '1.0.7';
+SeedSeek.GameVersion = '2.029';
 
 SeedSeek.launch = function(){
 	SeedSeek.init = function(){
