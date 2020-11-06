@@ -1,3 +1,8 @@
+== v1.0.0 ==
+– Compatibility with Cookie Clicker v2.031
+– Nothing else changed, but I can't think of a reason to keep calling this a beta, so now it's an "official" release
+– Should've done that back in 0.3 honestly
+
 v0.4.3
 – Compatibility with Cookie Clicker v2.029
 

@@ -1,5 +1,5 @@
 //******************************************
-// Auto JQB v0.4.3
+// Auto JQB v1.0.0
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
 // CCSE and portions of this program's code
@@ -10,8 +10,8 @@ Game.Win('Third-party');
 if(AutoJQB === undefined) var AutoJQB = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 AutoJQB.name = 'Auto JQB';
-AutoJQB.version = '0.4.3';
-AutoJQB.GameVersion = '2.029';
+AutoJQB.version = '1.0.0';
+AutoJQB.GameVersion = '2.031';
 
 AutoJQB.launch = function(){
 	AutoJQB.init = function(){
@@ -19,9 +19,9 @@ AutoJQB.launch = function(){
 		AutoJQB.Backup = {};
 		AutoJQB.config = {};
 		
-		AutoJQB.loadConfig();
-		CCSE.customLoad.push(AutoJQB.loadConfig);
-		CCSE.customSave.push(AutoJQB.saveConfig);
+		AutoJQB.config = AutoJQB.defaultConfig();
+		CCSE.customLoad.push(AutoJQB.load);
+		CCSE.customSave.push(AutoJQB.save);
 		
 		CCSE.MinigameReplacer(AutoJQB.ReplaceFarmTooltip, 'Farm');
 		AutoJQB.ReplaceGameMenu();
@@ -57,27 +57,32 @@ AutoJQB.launch = function(){
 	//***********************************
 	//    Configuration
 	//***********************************
-	AutoJQB.saveConfig = function(config){
-		CCSE.save.OtherMods.AutoJQB = AutoJQB.config;
+	AutoJQB.save = function(){
+		if(CCSE.config.OtherMods.AutoJQB)
+			delete CCSE.config.OtherMods.AutoJQB; // no need to keep this, it's now junk data
+		return JSON.stringify(AutoJQB.config);
 	}
 
-	AutoJQB.loadConfig = function(){
-		if(CCSE.save.OtherMods.AutoJQB)
-			AutoJQB.config = CCSE.save.OtherMods.AutoJQB;
-		else
-			AutoJQB.config = {};
-		
-		// All settings are off by default
-		if(AutoJQB.config.plantQBs === undefined) AutoJQB.config.plantQBs = false;
-		if(AutoJQB.config.doGoldenSwitch === undefined) AutoJQB.config.doGoldenSwitch = false;
-		if(AutoJQB.config.switchFertilizer === undefined) AutoJQB.config.switchFertilizer = false;
-		if(AutoJQB.config.switchWoodChips === undefined) AutoJQB.config.switchWoodChips = false;
-		if(AutoJQB.config.clearJQBTiles === undefined) AutoJQB.config.clearJQBTiles = false;
-		if(AutoJQB.config.startSaveScum === undefined) AutoJQB.config.startSaveScum = false;
-		if(AutoJQB.config.harvestQBs === undefined) AutoJQB.config.harvestQBs = false;
-		if(AutoJQB.config.plantElderworts === undefined) AutoJQB.config.plantElderworts = false;
-		if(AutoJQB.config.JQBGrowthCount === undefined) AutoJQB.config.JQBGrowthCount = 0;
-		if(AutoJQB.config.harvestJQBs === undefined) AutoJQB.config.harvestJQBs = false;
+	AutoJQB.load = function(str){
+		var config = JSON.parse(str);
+		for(var pref in config){
+			AutoJQB.config[pref] = config[pref];
+		}
+	}
+	
+	AutoJQB.defaultConfig = function(){
+		return {
+			plantQBs: false,
+			doGoldenSwitch: false,
+			switchFertilizer: false,
+			switchWoodChips: false,
+			clearJQBTiles: false,
+			startSaveScum: false,
+			harvestQBs: false,
+			plantElderworts: false,
+			JQBGrowthCount: 0,
+			harvestJQBs: false
+		};
 	}
 	
 	AutoJQB.toggle = function(prefName,button,on,off,invert) {
@@ -662,13 +667,15 @@ AutoJQB.launch = function(){
 		}
 		
 		if(AutoJQB.countPlants() != 0) {
+			// I don't know how to redraw the garden oops
 			console.log('If the garden appears unchanged, this is a visual bug; ' +
-					'save and reload to fix it.')
+					'save and refresh the page to fix it.')
 		}
 	}
 	
 	
-	if(CCSE.ConfirmGameVersion(AutoJQB.name, AutoJQB.version, AutoJQB.GameVersion)) AutoJQB.init();
+	if(CCSE.ConfirmGameVersion(AutoJQB.name, AutoJQB.version, AutoJQB.GameVersion))
+		Game.registerMod(AutoJQB.name, AutoJQB);
 }
 
 if(!AutoJQB.isLoaded){
