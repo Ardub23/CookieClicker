@@ -1,5 +1,5 @@
 //*******************************************
-// Disable Big Cookie v1.0.5
+// Disable Big Cookie v1.0.6
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
 // CCSE and portions of this program's code
@@ -10,16 +10,16 @@ Game.Win('Third-party');
 if(DisableBigCookie === undefined) var DisableBigCookie = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 DisableBigCookie.name = 'Disable Big Cookie';
-DisableBigCookie.version = '1.0.5';
-DisableBigCookie.GameVersion = '2.029';
+DisableBigCookie.version = '1.0.6';
+DisableBigCookie.GameVersion = '2.031';
 
 DisableBigCookie.launch = function(){
 	DisableBigCookie.init = function(){
 		DisableBigCookie.isLoaded = 1;
 		DisableBigCookie.Backup = {};
-		DisableBigCookie.config = {};
+		//DisableBigCookie.config = {};
 		
-		DisableBigCookie.loadConfig();
+		DisableBigCookie.config = DisableBigCookie.defaultConfig();
 		CCSE.customLoad.push(DisableBigCookie.loadConfig);
 		CCSE.customSave.push(DisableBigCookie.saveConfig);
 		
@@ -45,18 +45,25 @@ DisableBigCookie.launch = function(){
 	//***********************************
 	//    Configuration
 	//***********************************
-	DisableBigCookie.saveConfig = function(config){
-		CCSE.save.OtherMods.DisableBigCookie = DisableBigCookie.config;
+	DisableBigCookie.save = function(){
+		// CCSE.save.OtherMods.DisableBigCookie = DisableBigCookie.config;
+		if(CCSE.config.OtherMods.DisableBigCookie)
+			delete CCSE.config.OtherMods.DisableBigCookie; // no need to keep this, it's now junk data
+		return JSON.stringify(DisableBigCookie.config);
 	}
 
-	DisableBigCookie.loadConfig = function(){
-		if(CCSE.save.OtherMods.DisableBigCookie)
-			DisableBigCookie.config = CCSE.save.OtherMods.DisableBigCookie;
-		else
-			DisableBigCookie.config = {};
-		
-		// Default values if they're missing
-		if(DisableBigCookie.config.allowBigCookie === undefined) DisableBigCookie.config.allowBigCookie = true;
+	DisableBigCookie.load = function(){
+		var config = JSON.parse(str);
+//		if(CCSE.config.OtherMods.DisableBigCookie){
+//			var config = CCSE.config.OtherMods.DisableBigCookie;
+			for(var pref in config){
+				DisableBigCookie.config[pref] = config[pref];
+			}
+//		}
+	}
+	
+	DisableBigCookie.defaultConfig = function() {
+		return {allowBigCookie : true};
 	}
 	
 	DisableBigCookie.toggle = function(prefName,button,on,off,invert) {
@@ -94,7 +101,8 @@ DisableBigCookie.launch = function(){
 		});
 	}
 
-	if(CCSE.ConfirmGameVersion(DisableBigCookie.name, DisableBigCookie.version, DisableBigCookie.GameVersion)) DisableBigCookie.init();
+	if(CCSE.ConfirmGameVersion(DisableBigCookie.name, DisableBigCookie.version, DisableBigCookie.GameVersion))
+		Game.registerMod(DisableBigCookie.name, DisableBigCookie); // DisableBigCookie.init();
 }
 
 if(!DisableBigCookie.isLoaded){
