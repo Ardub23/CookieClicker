@@ -17,11 +17,11 @@ DisableBigCookie.launch = function(){
 	DisableBigCookie.init = function(){
 		DisableBigCookie.isLoaded = 1;
 		DisableBigCookie.Backup = {};
-		//DisableBigCookie.config = {};
+		DisableBigCookie.config = {};
 		
 		DisableBigCookie.config = DisableBigCookie.defaultConfig();
-		CCSE.customLoad.push(DisableBigCookie.loadConfig);
-		CCSE.customSave.push(DisableBigCookie.saveConfig);
+		CCSE.customLoad.push(DisableBigCookie.load);
+		CCSE.customSave.push(DisableBigCookie.save);
 		
 		DisableBigCookie.ReplaceGameMenu();
 		DisableBigCookie.setBigCookie();
@@ -52,13 +52,14 @@ DisableBigCookie.launch = function(){
 		return JSON.stringify(DisableBigCookie.config);
 	}
 
-	DisableBigCookie.load = function(){
+	DisableBigCookie.load = function(str){
 		var config = JSON.parse(str);
 //		if(CCSE.config.OtherMods.DisableBigCookie){
 //			var config = CCSE.config.OtherMods.DisableBigCookie;
 			for(var pref in config){
 				DisableBigCookie.config[pref] = config[pref];
 			}
+			DisableBigCookie.setBigCookie();
 //		}
 	}
 	
