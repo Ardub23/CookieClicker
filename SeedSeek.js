@@ -1,5 +1,5 @@
 //***********************************************
-// Seed Seek v1.0.7
+// Seed Seek v1.0.8
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
 // CCSE and some portions of this program's code
@@ -10,8 +10,8 @@ Game.Win('Third-party');
 if(SeedSeek === undefined) var SeedSeek = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 SeedSeek.name = 'Seed Seek';
-SeedSeek.version = '1.0.7';
-SeedSeek.GameVersion = '2.029';
+SeedSeek.version = '1.0.8';
+SeedSeek.GameVersion = '2.031';
 
 SeedSeek.launch = function(){
 	SeedSeek.init = function(){
@@ -19,9 +19,9 @@ SeedSeek.launch = function(){
 		SeedSeek.Backup = {};
 		SeedSeek.config = {};
 		
-		SeedSeek.loadConfig();
-		CCSE.customLoad.push(SeedSeek.loadConfig);
-		CCSE.customSave.push(SeedSeek.saveConfig);
+		SeedSeek.config = SeedSeek.defaultConfig();
+		CCSE.customLoad.push(SeedSeek.load);
+		CCSE.customSave.push(SeedSeek.save);
 		
 		CCSE.MinigameReplacer(SeedSeek.ReplaceFarmTooltip, 'Farm');
 		SeedSeek.ReplaceGameMenu();
@@ -46,29 +46,34 @@ SeedSeek.launch = function(){
 	//***********************************
 	//    Configuration
 	//***********************************
-	SeedSeek.saveConfig = function(config){
-		CCSE.save.OtherMods.SeedSeek = SeedSeek.config;
-	}
+	SeedSeek.save = function(){
+		if(CCSE.config.OtherMods.SeedSeek)
+			delete CCSE.config.OtherMods.SeedSeek; // no need to keep this, it's now junk data
+		return JSON.stringify(SeedSeek.config);
 
-	SeedSeek.loadConfig = function(){
-		if(CCSE.save.OtherMods.SeedSeek)
-			SeedSeek.config = CCSE.save.OtherMods.SeedSeek;
-		else
-			SeedSeek.config = {};
-		
-		// Default values if they're missing
-		if(SeedSeek.config.showAll === undefined) SeedSeek.config.showAll = false;
-		if(SeedSeek.config.growingPlantsUsable === undefined) SeedSeek.config.growingPlantsUsable = true;
-		if(SeedSeek.config.hideForGrowingPlants === undefined) SeedSeek.config.hideForGrowingPlants = false;
-		if(SeedSeek.config.removeTutorial === undefined) SeedSeek.config.removeTutorial = true;
-		
-		if(SeedSeek.config.growingPlantsObtained !== undefined) SeedSeek.config.hideForGrowingPlants = SeedSeek.config.growingPlantsObtained;
+	}
+	
+	SeedSeek.load = function(str){
+		var config = JSON.parse(str);
+		for(var pref in config){
+			SeedSeek.config[pref] = config[pref];
+		}
+	}
+	
+	SeedSeek.defaultConfig = function(){
+		return {
+			showAll: false,
+			growingPlantsUsable: true,
+			hideForGrowingPlants: false,
+			removeTutorial: true,
+			hideForGrowingPlants: false
+		};
 	}
 	
 	SeedSeek.toggle = function(prefName,button,on,off,invert) {
-		SeedSeek.config[prefName]=!SeedSeek.config[prefName];
-		l(button).innerHTML = (SeedSeek.config[prefName])?on:off;
-		l(button).className='option'+((SeedSeek.config[prefName]^invert)?'':' off');
+		SeedSeek.config[prefName] = !SeedSeek.config[prefName];
+		l(button).innerHTML = (SeedSeek.config[prefName])? on : off;
+		l(button).className = 'option' + ((SeedSeek.config[prefName]^invert)? '' : ' off');
 	}
 
 	//***********************************
@@ -155,7 +160,7 @@ SeedSeek.launch = function(){
 			if(!resultSeed.recipes)
 				SeedSeek.addPlantInfo();
 			
-			if(SeedSeek.config.showAll || (resultSeed.unlocked == 0 && !(resultSeed.isGrowing && SeedSeek.config.growingPlantsObtained))) {
+			if(SeedSeek.config.showAll || (resultSeed.unlocked == 0 && !(resultSeed.isGrowing && SeedSeek.config.hideForGrowingPlants))) {
 				
 				var usableRecipes = [];
 				
@@ -416,7 +421,8 @@ SeedSeek.launch = function(){
 		];
 	}
 	
-	if(CCSE.ConfirmGameVersion(SeedSeek.name, SeedSeek.version, SeedSeek.GameVersion)) SeedSeek.init();
+	if(CCSE.ConfirmGameVersion(SeedSeek.name, SeedSeek.version, SeedSeek.GameVersion))
+		Game.registerMod(SeedSeek.name, SeedSeek);
 }
 
 if(!SeedSeek.isLoaded){
