@@ -1,6 +1,11 @@
+== v1.1.0 ==
+– Now works for farms of any level at least 3
+– Added a warning about setting "# JQBs to scum growth for" to 4
+
+
 v1.0.1
 – Tweaked the options menu to match the style used by the vanilla options
-– Bugfix: Now handles when CCSE erroneously(?) passes nothing to load(); no more odd behavior when importing a save
+– Bugfix: Now handles when CCSE erroneously(?) passes nothing to load() – no more odd behavior when importing a save
 
 == v1.0.0 ==
 – Compatibility with Cookie Clicker v2.031

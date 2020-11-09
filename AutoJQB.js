@@ -1,5 +1,5 @@
 //******************************************
-// Auto JQB v1.0.1
+// Auto JQB v1.1.0
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
 // CCSE and portions of this program's code
@@ -10,7 +10,7 @@ Game.Win('Third-party');
 if(AutoJQB === undefined) var AutoJQB = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 AutoJQB.name = 'Auto JQB';
-AutoJQB.version = '1.0.1';
+AutoJQB.version = '1.1.0';
 AutoJQB.GameVersion = '2.031';
 
 AutoJQB.launch = function(){
@@ -45,13 +45,14 @@ AutoJQB.launch = function(){
 			}
 		}
 		
-		if(Game.Objects['Farm'].level < 9) {
-			if (Game.prefs.popups) Game.Popup('Warning: Auto JQB will be disabled until your farms are level 9.');
-			else Game.Notify('Warning: Auto JQB will be disabled until your farms are level 9.', '', '', 0, 1);
-		} else {
-			if (Game.prefs.popups) Game.Popup('Auto JQB loaded!');
-			else Game.Notify('Auto JQB loaded!', '', '', 1, 1);
-		}
+		var startupStr = (Game.Objects['Farm'].level < 3)
+				? 'Warning: Auto JQB will be disabled until your farms are level 3.'
+				: 'Auto JQB loaded!'
+		
+		if (Game.prefs.popups)
+			Game.Popup(startupStr);
+		else
+			Game.Notify(startupStr, '', '', 0, 1);
 	}
 	
 	//***********************************
@@ -144,7 +145,7 @@ AutoJQB.launch = function(){
 		Game.customOptionsMenu.push(function(){
 			var optionsMenu = ''
 			
-			if(Game.Objects['Farm'].level < 9) {
+			if(Game.Objects['Farm'].level < 3) {
 				optionsMenu += '<div class="listing"><div style="color:#FF5555"><big>All features of Auto JQB are disabled because your farms are below level 9.</big></div> <small>(This is done to ensure that nothing goes wrong checking for tiles that aren\'t there. Once your farms are leveled up, this message should disappear.)</small></div>'
 			}
 			
@@ -197,7 +198,7 @@ AutoJQB.launch = function(){
 				'<label>(plant elderworts around growing juicy queenbeets)</label><br/>';
 			
 			optionsMenu +=
-				WriteSlider('JQBGrowthSlider', '# JQBs to scum growth for', '[$]', function(){return AutoJQB.config.JQBGrowthCount}, "AutoJQB.setJQBGrowthCount(Math.round(l('JQBGrowthSlider').value)); l('JQBGrowthSliderRightText').innerHTML = AutoJQB.config.JQBGrowthCount;", 0, 4, 1) + '<label>(savescum to ensure that the specified number of juicy queenbeets age with each tick; set to 0 to disable)</label><br/>';
+				WriteSlider('JQBGrowthSlider', '# JQBs to scum growth for', '[$]', function(){return AutoJQB.config.JQBGrowthCount}, "AutoJQB.setJQBGrowthCount(Math.round(l('JQBGrowthSlider').value)); l('JQBGrowthSliderRightText').innerHTML = AutoJQB.config.JQBGrowthCount;", 0, 4, 1) + '<label>(savescum to ensure that the specified number of juicy queenbeets age with each tick; <small>4 is not recommended, as it can take longer than three minutes to get all 4 to age</small>)</label><br/>';
 			
 			optionsMenu +=
 				WriteButton('harvestJQBs','harvestJQBsButton','Harvest juicy queenbeets ON','Harvest juicy queenbeets OFF') +
@@ -212,13 +213,19 @@ AutoJQB.launch = function(){
 	}
 	
 	AutoJQB.ReplaceFarmTooltip = function() {
-		if(!Game.customMinigame['Farm'].toolTooltip) Game.customMinigame['Farm'].toolTooltip = [];
+		if(!Game.customMinigame['Farm'].toolTooltip)
+			Game.customMinigame['Farm'].toolTooltip = [];
 		if(AutoJQB.status == undefined) AutoJQB.status = 'Not yet determined';
 		Game.customMinigame['Farm'].toolTooltip.push(function(id, str){
 			if(id == 0) {
 				var statusLine = '<!--BeginAJQBStatus--><div width="100%">' +
 						'<b>Auto JQB status:</b><br/>' +
-						AutoJQB.status + '</div><!--EndAJQBStatus-->';
+						AutoJQB.status;
+				
+				if(AutoJQB.g.soils['fertilizer'].tick == 0.125)
+					statusLine += '<br/>(<b>Debug:</b> fast fertilizer active)';
+				
+				statusLine += '</div><!--EndAJQBStatus-->';
 				
 				if(str.indexOf('<!--BeginSeedSeekList-->') > 0) {
 					// Add status immediately before Seed Seek list, if present
@@ -242,12 +249,12 @@ AutoJQB.launch = function(){
 	AutoJQB.autoFarm = function() {
 		var g = AutoJQB.g;
 		
-		if(Game.Objects['Farm'].level < 9)
-			AutoJQB.status = 'Disabled until farms are level 9';
+		if(Game.Objects['Farm'].level < 3)
+			AutoJQB.status = 'Disabled until farms are level 3';
 		else if(g.freeze)
 			AutoJQB.status = 'Disabled while garden is frozen';
 		
-		if(Game.Objects['Farm'].level < 9 || AutoJQB.busy || g.freeze)
+		if(Game.Objects['Farm'].level < 3 || AutoJQB.busy || g.freeze)
 			return false;
 		
 		// Harvest mature JQBs
@@ -269,11 +276,11 @@ AutoJQB.launch = function(){
 		if(AutoJQB.countPlants() == 0) {	// Garden is empty
 			AutoJQB.status = 'Waiting for queenbeets to be ' +
 					(!g.plants['queenbeet'].unlocked? 'unlocked'
-							: !AutoJQB.canAfford(32, 'queenbeet')? 'affordable'
-																 : 'planted');
+							: !AutoJQB.canAfford('queenbeet')? 'affordable'
+															 : 'planted');
 			
 			if(AutoJQB.config.plantQBs && g.plants['queenbeet'].unlocked &&
-					AutoJQB.canAfford(32, 'queenbeet')) {
+					AutoJQB.canAfford('queenbeet')) {
 				AutoJQB.status = 'Planting queenbeets';
 				AutoJQB.hadGoldenSwitch = false;
 				if(AutoJQB.config.doGoldenSwitch && Game.Has('Golden switch [off]')) {
@@ -281,15 +288,8 @@ AutoJQB.launch = function(){
 					Game.Upgrades['Golden switch [on]'].buy();
 				}
 				
-				setTimeout(function() {	// Wait 500 ms to ensure that golden switch CPS change registers
-					for(var y = 0; y < 6; y++) {
-						for(var x = 0; x < 6; x++) {
-							if((x!=1 && x!=4) || (y!=1 && y!=4)) {
-								g.seedSelected = g.plants['queenbeet'].id;
-								g.clickTile(x,y);
-							}
-						}
-					}
+				setTimeout(function() {	// Wait 500 ms to ensure that GS CPS change registers
+					AutoJQB.plantQBs();
 					
 					if(AutoJQB.hadGoldenSwitch) {
 						Game.Upgrades['Golden switch [off]'].buy();
@@ -349,7 +349,7 @@ AutoJQB.launch = function(){
 			
 			// Plant elderworts
 			if(AutoJQB.config.plantElderworts && g.plants['elderwort'].unlocked &&
-					AutoJQB.canAfford(8 * AutoJQB.countPlants(22), 'elderwort') &&
+					AutoJQB.canAfford('elderwort') && // TODO: Determine # needed
 					AutoJQB.countPlants(8) == 0) {
 				AutoJQB.hadGoldenSwitch = false;
 				if(AutoJQB.config.doGoldenSwitch && Game.Has('Golden switch [off]')) {
@@ -408,6 +408,67 @@ AutoJQB.launch = function(){
 			}
 		} else {
 			AutoJQB.status = 'On hold (unknown garden state; clear your garden to enable auto-farming)';
+		}
+	}
+	
+	AutoJQB.plantQBs = function() {
+		var g = AutoJQB.g;
+		
+		var xMin, yMin, xMax, yMax;
+		var xExc1, xExc2, yExc1, yExc2;
+		
+		switch(Game.Objects['Farm'].level) {
+			case 0:
+			case 1:
+			case 2:
+				console.log('Error: AutoJQB.plantQBs() called with farm level < 3');
+				return;
+			case 3:
+			case 4:
+			case 5:
+				xMin = yMin = 2;
+				xMax = yMax = 4;
+				xExc1 = xExc2 = yExc1 = yExc2 = 3;
+				break;
+			case 6:
+				xMin = yMin = 1;
+				xMax = 5;
+				yMax = 3;
+				xExc1 = 2; xExc2 = 4;
+				yExc1 = yExc2 = 2;
+				break;
+			case 7:
+				xMin = yMin = 1;
+				xMax = yMax = 5;
+				xExc1 = yExc1 = 2;
+				xExc2 = yExc2 = 4;
+				break;
+			case 8:
+				xMin = 0;
+				yMin = 1;
+				xMax = yMax = 5;
+				xExc1 = 1;
+				yExc1 = 2;
+				xExc2 = yExc2 = 4;
+				break;
+			case 9:
+			default:
+				xMin = yMin = 0;
+				xMax = yMax = 5;
+				xExc1 = yExc1 = 1;
+				xExc2 = yExc2 = 4;
+		}
+		
+		console.log('xMin:' + xMin + ' xMax:' + xMax + ' yMin:' + yMin + ' yMax:' + yMax)
+		console.log('xExc1:' + xExc1 + ' xExc2:' + xExc2 + ' yExc1:' + yExc1 + ' yExc2:' + yExc2);
+		
+		for(var y = yMin; y <= yMax; y++) {
+			for(var x = xMin; x <= xMax; x++) {
+				if((x!=xExc1 && x!=xExc2) || (y!=yExc1 && y!=yExc2)) {
+					g.seedSelected = g.plants['queenbeet'].id;
+					g.clickTile(x,y);
+				}
+			}
 		}
 	}
 	
@@ -584,8 +645,34 @@ AutoJQB.launch = function(){
 		return possibleTiles;
 	}
 	
-	AutoJQB.canAfford = function(count, plant) {
+	AutoJQB.canAfford = function(plant) {
 		var g = AutoJQB.g;
+		
+		var count;
+		switch(Game.Objects['Farm'].level) {
+			case 0:
+			case 1:
+			case 2:
+				console.log('Error: AutoJQB.canAfford() called with farm level < 3');
+				return false;
+			case 3:
+			case 4:
+			case 5:
+				count = 8;
+				break;
+			case 6:
+				count = 13;
+				break;
+			case 7:
+				count = 21;
+				break;
+			case 8:
+				count = 26;
+				break;
+			case 9:
+			default:
+				count = 32;
+		}
 		
 		if(!Game.Has('Golden switch [off]') // GS is off (or not even available)
 				|| !AutoJQB.config.doGoldenSwitch) {
@@ -650,7 +737,7 @@ AutoJQB.launch = function(){
 		}
 	}
 	
-	// After loading the farm, changes won't be immediately visible;
+	// After loading the garden, changes won't be immediately visible;
 	// save and reload to see them.
 	AutoJQB.debug.loadGarden = function() {
 		if(!AutoJQB.config.debugGardenSave) return;
