@@ -1,5 +1,5 @@
 //*******************************************
-// Disable Big Cookie v1.0.6
+// Disable Big Cookie v1.0.7
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
 // CCSE and portions of this program's code
@@ -10,7 +10,7 @@ Game.Win('Third-party');
 if(DisableBigCookie === undefined) var DisableBigCookie = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 DisableBigCookie.name = 'Disable Big Cookie';
-DisableBigCookie.version = '1.0.6';
+DisableBigCookie.version = '1.0.7';
 DisableBigCookie.GameVersion = '2.031';
 
 DisableBigCookie.launch = function(){
@@ -46,21 +46,18 @@ DisableBigCookie.launch = function(){
 	//    Configuration
 	//***********************************
 	DisableBigCookie.save = function(){
-		// CCSE.save.OtherMods.DisableBigCookie = DisableBigCookie.config;
 		if(CCSE.config.OtherMods.DisableBigCookie)
 			delete CCSE.config.OtherMods.DisableBigCookie; // no need to keep this, it's now junk data
 		return JSON.stringify(DisableBigCookie.config);
 	}
 
 	DisableBigCookie.load = function(str){
+		if(!str) return;
 		var config = JSON.parse(str);
-//		if(CCSE.config.OtherMods.DisableBigCookie){
-//			var config = CCSE.config.OtherMods.DisableBigCookie;
-			for(var pref in config){
-				DisableBigCookie.config[pref] = config[pref];
-			}
-			DisableBigCookie.setBigCookie();
-//		}
+		for(var pref in config){
+			DisableBigCookie.config[pref] = config[pref];
+		}
+		DisableBigCookie.setBigCookie();
 	}
 	
 	DisableBigCookie.defaultConfig = function() {
@@ -103,7 +100,7 @@ DisableBigCookie.launch = function(){
 	}
 
 	if(CCSE.ConfirmGameVersion(DisableBigCookie.name, DisableBigCookie.version, DisableBigCookie.GameVersion))
-		Game.registerMod(DisableBigCookie.name, DisableBigCookie); // DisableBigCookie.init();
+		Game.registerMod(DisableBigCookie.name, DisableBigCookie);
 }
 
 if(!DisableBigCookie.isLoaded){

@@ -1,3 +1,7 @@
+v1.0.9
+– Tweaked the options menu to match the style used by the vanilla options
+– Bugfix: Now handles when CCSE erroneously(?) passes nothing to load(); no more odd behavior when importing a save
+
 v1.0.8
 – Compatibility with Cookie Clicker v2.031
 

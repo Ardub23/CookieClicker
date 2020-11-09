@@ -1,5 +1,5 @@
 //***********************************************
-// Seed Seek v1.0.8
+// Seed Seek v1.0.9
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
 // CCSE and some portions of this program's code
@@ -10,7 +10,7 @@ Game.Win('Third-party');
 if(SeedSeek === undefined) var SeedSeek = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 SeedSeek.name = 'Seed Seek';
-SeedSeek.version = '1.0.8';
+SeedSeek.version = '1.0.9';
 SeedSeek.GameVersion = '2.031';
 
 SeedSeek.launch = function(){
@@ -50,10 +50,10 @@ SeedSeek.launch = function(){
 		if(CCSE.config.OtherMods.SeedSeek)
 			delete CCSE.config.OtherMods.SeedSeek; // no need to keep this, it's now junk data
 		return JSON.stringify(SeedSeek.config);
-
 	}
 	
 	SeedSeek.load = function(str){
+		if(!str) return;
 		var config = JSON.parse(str);
 		for(var pref in config){
 			SeedSeek.config[pref] = config[pref];
@@ -89,10 +89,10 @@ SeedSeek.launch = function(){
 		
 		Game.customOptionsMenu.push(function(){
 			CCSE.AppendCollapsibleOptionsMenu(SeedSeek.name,
-				'<div class="listing">' + WriteButton('removeTutorial','removeTutorialButton','Remove tutorial ON','Remove tutorial OFF') + '<label>(remove the tutorial from the "Garden info" tooltip)</label></div>' +
-				'<div class="listing">' + WriteButton('showAll','showAllButton','Show all mutations ON','Show all mutations OFF') + '<label>(show all possible mutations, including ones for plants whose seeds you\'ve already unlocked)</label></div>' +
-				'<div class="listing">' + WriteButton('growingPlantsUsable','growingPlantsUsableButton','Consider growing plants usable ON','Consider growing plants usable OFF') + '<label>(consider plants that are growing in your garden to be usable for mutations, even if you haven\'t unlocked the seed yet)</label></div>' +
-				'<div class="listing">' + WriteButton('hideForGrowingPlants','hideForGrowingPlantsButton','Hide mutations for growing plants ON','Hide mutations for growing plants OFF') + '<label>(mutations for plants that are growing in your garden will be hidden, as if the seed were already unlocked; the "show all mutations" option overrides this)</label></div>'
+				'<div class="listing">' + WriteButton('removeTutorial','removeTutorialButton','Remove tutorial ON','Remove tutorial OFF') + '<label>(remove the tutorial from the "Garden info" tooltip)</label><br/>' +
+				WriteButton('showAll','showAllButton','Show all mutations ON','Show all mutations OFF') + '<label>(show all possible mutations, including ones for plants whose seeds you\'ve already unlocked)</label><br/>' +
+				WriteButton('growingPlantsUsable','growingPlantsUsableButton','Consider growing plants usable ON','Consider growing plants usable OFF') + '<label>(consider plants that are growing in your garden to be usable for mutations, even if you haven\'t unlocked the seed yet)</label><br/>' +
+				WriteButton('hideForGrowingPlants','hideForGrowingPlantsButton','Hide mutations for growing plants ON','Hide mutations for growing plants OFF') + '<label>(mutations for plants that are growing in your garden will be hidden, as if the seed were already unlocked; the "show all mutations" option overrides this)</label></div>'
 			);
 		});
 		
