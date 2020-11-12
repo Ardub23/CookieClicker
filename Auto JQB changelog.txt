@@ -1,3 +1,6 @@
+v1.1.1
+– Bugfix: Options menu warning for farm level < 3 no longer says "level 9"
+
 == v1.1.0 ==
 – Now works for farms of any level at least 3
 – Added a warning about setting "# JQBs to scum growth for" to 4

@@ -10,7 +10,7 @@ Game.Win('Third-party');
 if(AutoJQB === undefined) var AutoJQB = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 AutoJQB.name = 'Auto JQB';
-AutoJQB.version = '1.1.0';
+AutoJQB.version = '1.1.1';
 AutoJQB.GameVersion = '2.031';
 
 AutoJQB.launch = function(){
@@ -146,7 +146,7 @@ AutoJQB.launch = function(){
 			var optionsMenu = ''
 			
 			if(Game.Objects['Farm'].level < 3) {
-				optionsMenu += '<div class="listing"><div style="color:#FF5555"><big>All features of Auto JQB are disabled because your farms are below level 9.</big></div> <small>(This is done to ensure that nothing goes wrong checking for tiles that aren\'t there. Once your farms are leveled up, this message should disappear.)</small></div>'
+				optionsMenu += '<div class="listing"><div style="color:#FF5555"><big>All features of Auto JQB are disabled because your farms are below level 3.</big></div> <small>(This is done to ensure that nothing goes wrong checking for tiles that aren\'t there. Once your farms are leveled up, this message should disappear.)</small></div>'
 			}
 			
 			optionsMenu += '<div class="listing">' +
