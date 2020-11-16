@@ -1,5 +1,5 @@
 //******************************************
-// Auto JQB v1.1.0
+// Auto JQB v1.1.2
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
 // CCSE and portions of this program's code
@@ -10,7 +10,7 @@ Game.Win('Third-party');
 if(AutoJQB === undefined) var AutoJQB = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 AutoJQB.name = 'Auto JQB';
-AutoJQB.version = '1.1.1';
+AutoJQB.version = '1.1.2';
 AutoJQB.GameVersion = '2.031';
 
 AutoJQB.launch = function(){
@@ -169,7 +169,7 @@ AutoJQB.launch = function(){
 			
 			optionsMenu +=
 				WriteButton('switchWoodChips','switchWoodChipsButton','Switch to wood chips ON','Switch to wood chips OFF') +
-				'<label>(switch soil to wood chips when juicy queenbeets have a chance of appearing; <small>not recommended if "Auto-start savescum" is on</small>)</label><br/>';
+				'<label>(switch soil to wood chips when juicy queenbeets have a chance of appearing; <small>not recommended if "Auto-start savescum" is on<!--due to slower tick rate--></small>)</label><br/>';
 			
 			optionsMenu +=
 				WriteButton('clearJQBTiles','clearJQBTilesButton','Clear JQB tiles ON','Clear JQB tiles OFF') +
@@ -273,12 +273,7 @@ AutoJQB.launch = function(){
 			}
 		}
 		
-		if(AutoJQB.countPlants() == 0) {	// Garden is empty
-			AutoJQB.status = 'Waiting for queenbeets to be ' +
-					(!g.plants['queenbeet'].unlocked? 'unlocked'
-							: !AutoJQB.canAfford('queenbeet')? 'affordable'
-															 : 'planted');
-			
+		if(AutoJQB.countPlants() == 0) {	// Garden is empty			
 			if(AutoJQB.config.plantQBs && g.plants['queenbeet'].unlocked &&
 					AutoJQB.canAfford('queenbeet')) {
 				AutoJQB.status = 'Planting queenbeets';
@@ -295,6 +290,11 @@ AutoJQB.launch = function(){
 						Game.Upgrades['Golden switch [off]'].buy();
 					}
 				}, 500);
+			} else {
+				AutoJQB.status = 'Waiting for queenbeets to be ' +
+						(!g.plants['queenbeet'].unlocked? 'unlocked'
+								: !AutoJQB.canAfford('queenbeet')? 'affordable'
+																 : 'planted');
 			}
 		} else if(AutoJQB.countJQBTiles() > 0) {	// At least one tile can grow a JQB
 			if(AutoJQB.config.switchWoodChips)
@@ -345,10 +345,8 @@ AutoJQB.launch = function(){
 						Game.Upgrades['Golden switch [on]'].buy();
 					}
 				}, 500);
-			}
-			
-			// Plant elderworts
-			if(AutoJQB.config.plantElderworts && g.plants['elderwort'].unlocked &&
+			} else if(AutoJQB.config.plantElderworts && // Plant elderworts
+					g.plants['elderwort'].unlocked &&
 					AutoJQB.canAfford('elderwort') && // TODO: Determine # needed
 					AutoJQB.countPlants(8) == 0) {
 				AutoJQB.hadGoldenSwitch = false;
@@ -459,9 +457,6 @@ AutoJQB.launch = function(){
 				xExc2 = yExc2 = 4;
 		}
 		
-		console.log('xMin:' + xMin + ' xMax:' + xMax + ' yMin:' + yMin + ' yMax:' + yMax)
-		console.log('xExc1:' + xExc1 + ' xExc2:' + xExc2 + ' yExc1:' + yExc1 + ' yExc2:' + yExc2);
-		
 		for(var y = yMin; y <= yMax; y++) {
 			for(var x = xMin; x <= xMax; x++) {
 				if((x!=xExc1 && x!=xExc2) || (y!=yExc1 && y!=yExc2)) {
@@ -480,11 +475,11 @@ AutoJQB.launch = function(){
 			clearInterval(AutoJQB.saveScumLoop);
 			AutoJQB.busy=false;
 		} else {
-			AutoJQB.mySaveString=Game.WriteSave(1);
-			AutoJQB.desiredAmount=AutoJQB.countPlants(22)+1;
-			AutoJQB.busy=true;
+			AutoJQB.mySaveString = Game.WriteSave(1);
+			AutoJQB.desiredAmount = AutoJQB.countPlants(22)+1;
+			AutoJQB.busy = true;
 			clearInterval(AutoJQB.saveScumLoop);
-			AutoJQB.saveScumLoop=setInterval(AutoJQB.saveScum,10,(count==1)); 
+			AutoJQB.saveScumLoop = setInterval(AutoJQB.saveScum,10,(count==1)); 
 		}
 		// If garden is frozen, all three buttons are dimmed to show that they're inactive
 		l('scum1JQBButton').className = 'option' +
@@ -506,6 +501,7 @@ AutoJQB.launch = function(){
 		} else if(AutoJQB.countPlants(22) >= AutoJQB.desiredAmount) {
 			// If we've gained a JQB, save and prepare to go for the next one
 			AutoJQB.mySaveString = Game.WriteSave(1);
+			AutoJQB.busy = false;
 			
 			if(justOne || AutoJQB.countJQBTiles() == 0) {
 				// Done save scumming
@@ -525,10 +521,12 @@ AutoJQB.launch = function(){
 		} else if(g.nextStep - Date.now() > 1000*(g.soilsById[g.soil].tick*60-2)) {
 			// If time is just after a garden tick, load the save
 			AutoJQB.status = 'Savescumming for a JQB to appear';
+			AutoJQB.busy = true;
 			Game.ImportSaveCode(AutoJQB.mySaveString);
 		} else if(g.nextStep - Date.now() > 500 && g.nextStep-Date.now() < 1000) {
 			// Save again just before a garden tick
 			AutoJQB.status = 'Preparing to savescum for a JQB to appear';
+			AutoJQB.busy = true;
 			AutoJQB.mySaveString = Game.WriteSave(1);
 		}
 	}
@@ -561,6 +559,7 @@ AutoJQB.launch = function(){
 			AutoJQB.status = numGrown + ' JQB' + (numGrown>1? 's' : '') +
 					' aged; preparing to savescum on next tick';
 			AutoJQB.mySaveString = Game.WriteSave(1);
+			AutoJQB.busy = false;
 			
 			// Update ages in JQBLocations
 			for(var i = 0; i < AutoJQB.JQBLocations.length; i++) {
@@ -583,11 +582,13 @@ AutoJQB.launch = function(){
 			// If time is just after a garden tick, load the save
 			AutoJQB.status = 'Savescumming for ' + target +
 					' JQB' + (target>1? 's' : '') + ' to age';
+			AutoJQB.busy = true;
 			Game.ImportSaveCode(AutoJQB.mySaveString);
 		} else if(g.nextStep-Date.now() > 500 && g.nextStep-Date.now() < 1000) {
 			// Save again just before a garden tick
 			AutoJQB.status = 'About to savescum for ' + target +
 					' JQB' + (target>1? 's' : '') + ' to age';
+			AutoJQB.busy = true;
 			AutoJQB.mySaveString = Game.WriteSave(1);
 		}
 	}
@@ -732,6 +733,32 @@ AutoJQB.launch = function(){
 				AutoJQB.config.debugGardenSave[row].push([]);
 				for(var i = 0; i < g.plot[row][tile].length; i++) {
 					AutoJQB.config.debugGardenSave[row][tile].push(g.plot[row][tile][i]);
+				}
+			}
+		}
+	}
+	
+	AutoJQB.debug.matureQBs = function() {
+		if(Game.Objects['Farm'].level < 9)
+			return;
+		var g = AutoJQB.g;
+		var qb = [21, g.plants['queenbeet'].mature];
+		var jqb = [22, 0];
+		
+		var plot = [
+				[qb,qb,qb,qb,qb,qb],
+				[qb,jqb,qb,qb,jqb,qb],
+				[qb,qb,qb,qb,qb,qb],
+				[qb,qb,qb,qb,qb,qb],
+				[qb,jqb,qb,qb,[0,0],qb],
+				[qb,qb,qb,qb,qb,qb]
+		];
+		
+		for(var row = 0; row < plot.length; row++) {
+			for(var tile = 0; tile < plot[row].length; tile++) {
+				g.plot[row][tile] = [];
+				for(var i = 0; i < plot[row][tile].length; i++) {
+					g.plot[row][tile].push(plot[row][tile][i]);
 				}
 			}
 		}

@@ -1,3 +1,8 @@
+v1.1.2
+– Removed debug console print statements
+– Bugfix: No longer leaves golden switch on after harvesting queenbeets if elderworts are then planted
+– Bugfix: Main loop no longer tries to run during savescum loop
+
 v1.1.1
 – Bugfix: Options menu warning for farm level < 3 no longer says "level 9"
 
