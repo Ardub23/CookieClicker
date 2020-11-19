@@ -1,16 +1,19 @@
 //******************************************
-// Auto JQB v1.1.2
-// by Ardub23 (reddit.com/u/Ardub23)
+// Auto JQB v1.1.3
+// by Ardub (reddit.com/u/Ardub23)
 // 
 // CCSE and portions of this program's code
 // by klattmose (reddit.com/u/klattmose)
+//
+// Special thanks to Johanson69, whose post
+// inspired this  mod. redd.it/8e4j3b
 //*******************************************
 
 Game.Win('Third-party');
 if(AutoJQB === undefined) var AutoJQB = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 AutoJQB.name = 'Auto JQB';
-AutoJQB.version = '1.1.2';
+AutoJQB.version = '1.1.3';
 AutoJQB.GameVersion = '2.031';
 
 AutoJQB.launch = function(){
@@ -269,11 +272,11 @@ AutoJQB.launch = function(){
 			}
 			if(AutoJQB.countPlants(8) + AutoJQB.countPlants(13) == AutoJQB.countPlants()) {
 				// All remaining plants are elderworts or meddleweeds
-				Game.Objects['Farm'].minigame.harvestAll();
+				g.harvestAll();
 			}
 		}
 		
-		if(AutoJQB.countPlants() == 0) {	// Garden is empty			
+		if(AutoJQB.countPlants() == 0) { // Garden is empty			
 			if(AutoJQB.config.plantQBs && g.plants['queenbeet'].unlocked &&
 					AutoJQB.canAfford('queenbeet')) {
 				AutoJQB.status = 'Planting queenbeets';
@@ -283,7 +286,7 @@ AutoJQB.launch = function(){
 					Game.Upgrades['Golden switch [on]'].buy();
 				}
 				
-				setTimeout(function() {	// Wait 500 ms to ensure that GS CPS change registers
+				setTimeout(function() { // Wait 500 ms to ensure that GS CPS change registers
 					AutoJQB.plantQBs();
 					
 					if(AutoJQB.hadGoldenSwitch) {
@@ -296,7 +299,7 @@ AutoJQB.launch = function(){
 								: !AutoJQB.canAfford('queenbeet')? 'affordable'
 																 : 'planted');
 			}
-		} else if(AutoJQB.countJQBTiles() > 0) {	// At least one tile can grow a JQB
+		} else if(AutoJQB.countJQBTiles() > 0) { // At least one tile can grow a JQB now
 			if(AutoJQB.config.switchWoodChips)
 				l('gardenSoil-4').click();
 			
@@ -309,11 +312,7 @@ AutoJQB.launch = function(){
 			} else {
 				AutoJQB.status = 'Waiting for JQBs to appear';
 			}
-		} else if(AutoJQB.countJQBTiles(true) > 0) {// Waiting for QBs to mature
-			AutoJQB.status = 'Waiting for queenbeets to mature';
-			if(AutoJQB.config.switchFertilizer)
-				l('gardenSoil-1').click();
-		} else if(AutoJQB.countPlants(22) > 0) {	// Waiting for JQBs to mature
+		} else if(AutoJQB.countPlants(22) > 0) { // Waiting for JQBs to mature
 			AutoJQB.status = (AutoJQB.config.harvestJQBs)
 					? 'Waiting to harvest JQBs once mature'
 					: 'Waiting for JQBs to mature';
@@ -321,31 +320,7 @@ AutoJQB.launch = function(){
 			if(AutoJQB.config.switchFertilizer)
 				l('gardenSoil-1').click();
 			
-			// Harvest queenbeets (their purpose is already served)
-			if(AutoJQB.config.harvestQBs && AutoJQB.countPlants(21) > 0) {
-				AutoJQB.hadGoldenSwitch = true;
-				if(AutoJQB.config.doGoldenSwitch && Game.Has('Golden switch [on]')) {
-					// Turn GS on before harvesting queenbeets
-					AutoJQB.hadGoldenSwitch = false; // to turn it back off later
-					Game.Upgrades['Golden switch [off]'].buy();
-				}
-				
-				setTimeout(function() {
-					for(var y = 0; y < 6; y++) {
-						for(var x = 0; x < 6; x++) {
-							var me = g.getTile(x,y);
-							
-							if(me[0] == 21 && me[1] >= g.plants['queenbeet'].mature) {
-								g.clickTile(x,y);
-							}
-						}
-					}
-					
-					if(!AutoJQB.hadGoldenSwitch) {
-						Game.Upgrades['Golden switch [on]'].buy();
-					}
-				}, 500);
-			} else if(AutoJQB.config.plantElderworts && // Plant elderworts
+			if(AutoJQB.config.plantElderworts && // Plant elderworts
 					g.plants['elderwort'].unlocked &&
 					AutoJQB.canAfford('elderwort') && // TODO: Determine # needed
 					AutoJQB.countPlants(8) == 0) {
@@ -380,6 +355,8 @@ AutoJQB.launch = function(){
 						Game.Upgrades['Golden switch [off]'].buy();
 					}
 				}, 500);
+			} else {
+				AutoJQB.harvestMatureQBs();
 			}
 			
 			// Begin JQB growth savescumming
@@ -404,6 +381,10 @@ AutoJQB.launch = function(){
 					AutoJQB.saveScumLoop = setInterval(AutoJQB.saveScumJQBGrowth, 10);
 				}
 			}
+		} else if(AutoJQB.countJQBTiles(true) > 0) {// Waiting for QBs to mature
+			AutoJQB.status = 'Waiting for queenbeets to mature';
+			if(AutoJQB.config.switchFertilizer)
+				l('gardenSoil-1').click();
 		} else {
 			AutoJQB.status = 'On hold (unknown garden state; clear your garden to enable auto-farming)';
 		}
@@ -463,6 +444,46 @@ AutoJQB.launch = function(){
 					g.seedSelected = g.plants['queenbeet'].id;
 					g.clickTile(x,y);
 				}
+			}
+		}
+	}
+	
+	AutoJQB.harvestMatureQBs = function() {
+		var g = AutoJQB.g;
+		
+		if(AutoJQB.config.harvestQBs && AutoJQB.countPlants(21) > 0 && AutoJQB.countJQBTiles(true) == 0) {
+			var matureQBs = false;
+			for(var y = 0; y < 6; y++) {
+				for(var x = 0; x < 6; x++) {
+					var me = g.getTile(x,y);
+					if(me[0] == 21 && me[1] >= g.plants['queenbeet'].mature) {
+						matureQBs = true;
+					}
+				}
+			}
+			
+			if(matureQBs) {
+				AutoJQB.hadGoldenSwitch = true;
+				if(AutoJQB.config.doGoldenSwitch && Game.Has('Golden switch [on]')) {
+					// Turn GS on before harvesting queenbeets
+					AutoJQB.hadGoldenSwitch = false; // to turn it back off later
+					Game.Upgrades['Golden switch [off]'].buy();
+				}
+				
+				setTimeout(function() {
+					for(var y = 0; y < 6; y++) {
+						for(var x = 0; x < 6; x++) {
+							var me = g.getTile(x,y);
+							if(me[0] == 21 && me[1] >= g.plants['queenbeet'].mature) {
+								g.clickTile(x,y);
+							}
+						}
+					}
+					
+					if(!AutoJQB.hadGoldenSwitch) {
+						Game.Upgrades['Golden switch [on]'].buy();
+					}
+				}, 500);
 			}
 		}
 	}
@@ -535,8 +556,10 @@ AutoJQB.launch = function(){
 		var g = AutoJQB.g;
 		
 		if(g.freeze || AutoJQB.JQBLocations.length == 0 || AutoJQB.countPlants(22) == 0 ||
-				AutoJQB.config.JQBGrowthCount == 0) {
-			// Stop savescumming if garden is frozen, no JQBs are immature, or option is disabled
+				AutoJQB.config.JQBGrowthCount == 0 ||
+				(AutoJQB.countJQBTiles() > 0 && (AutoJQB.config.startSaveScum || AutoJQB.scumCount > 0))) {
+			// Stop savescumming if garden is frozen, no JQBs are immature, option is disabled,
+			// or appearance of a new JQB can be scummed for
 			clearInterval(AutoJQB.saveScumLoop);
 			AutoJQB.busy = false;
 			AutoJQB.JQBLocations = [];
