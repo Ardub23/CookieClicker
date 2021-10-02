@@ -1,19 +1,19 @@
 //******************************************
-// Auto JQB v1.1.3
+// Auto JQB v1.1.4
 // by Ardub (reddit.com/u/Ardub23)
 // 
 // CCSE and portions of this program's code
 // by klattmose (reddit.com/u/klattmose)
 //
 // Special thanks to Johanson69, whose post
-// inspired this  mod. redd.it/8e4j3b
+// inspired this mod. redd.it/8e4j3b
 //*******************************************
 
 Game.Win('Third-party');
 if(AutoJQB === undefined) var AutoJQB = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 AutoJQB.name = 'Auto JQB';
-AutoJQB.version = '1.1.3';
+AutoJQB.version = '1.1.4';
 AutoJQB.GameVersion = '2.031';
 
 AutoJQB.launch = function(){
@@ -152,35 +152,32 @@ AutoJQB.launch = function(){
 				optionsMenu += '<div class="listing"><div style="color:#FF5555"><big>All features of Auto JQB are disabled because your farms are below level 3.</big></div> <small>(This is done to ensure that nothing goes wrong checking for tiles that aren\'t there. Once your farms are leveled up, this message should disappear.)</small></div>'
 			}
 			
-			optionsMenu += '<div class="listing">' +
-				'<a class="option" id="RecommendedOptionsButton" ' + Game.clickStr +
-				'="AutoJQB.recommendedSettings();">Recommended settings</a> ' +
-				'<a class="option" id="AllOffButton" ' + Game.clickStr +
-				'="AutoJQB.allOff();">All settings OFF</a></div>';
+			optionsMenu += '<div class="listing">'
+				+ '<a class="option" id="RecommendedOptionsButton" ' + Game.clickStr
+				+ '="AutoJQB.recommendedSettings();">Recommended settings</a> '
+				+ '<a class="option" id="AllOffButton" ' + Game.clickStr
+				+ '="AutoJQB.allOff();">All settings OFF</a></div>';
 			
-			optionsMenu += '<div class="listing">' +
-				WriteButton('plantQBs','plantQBsButton','Plant queenbeets ON','Plant queenbeets OFF') +
-				'<label>(plant queenbeets when the garden is empty)</label><br/>';
+			optionsMenu += '<div class="listing">'
+				+ WriteButton('plantQBs','plantQBsButton','Plant queenbeets ON','Plant queenbeets OFF')
+				+ '<label>(plant queenbeets when the garden is empty)</label><br/>';
 			
-			optionsMenu +=
-				WriteButton('doGoldenSwitch','doGoldenSwitchButton','Manage golden switch ON','Manage golden switch OFF') +
-				'<label>(if the golden switch is on, briefly turn it off when auto-planting; if it\'s off, briefly turn it on when auto-harvesting queenbeets)</label><br/>';
+			optionsMenu += WriteButton('doGoldenSwitch','doGoldenSwitchButton','Manage golden switch ON','Manage golden switch OFF')
+				+ '<label>(if the golden switch is on, briefly turn it off when auto-planting; '
+				+ 'if it\'s off, briefly turn it on when auto-harvesting queenbeets)</label><br/>';
 			
-			optionsMenu +=
-				WriteButton('switchFertilizer','switchFertilizerButton','Switch to fertilizer ON','Switch to fertilizer OFF') +
-				'<label>(switch soil to fertilizer when waiting for plants to grow)</label><br/>';
+			optionsMenu += WriteButton('switchFertilizer','switchFertilizerButton','Switch to fertilizer ON','Switch to fertilizer OFF')
+				+ '<label>(switch soil to fertilizer when waiting for plants to grow)</label><br/>';
 			
-			optionsMenu +=
-				WriteButton('switchWoodChips','switchWoodChipsButton','Switch to wood chips ON','Switch to wood chips OFF') +
-				'<label>(switch soil to wood chips when juicy queenbeets have a chance of appearing; <small>not recommended if "Auto-start savescum" is on<!--due to slower tick rate--></small>)</label><br/>';
+			optionsMenu += WriteButton('switchWoodChips','switchWoodChipsButton','Switch to wood chips ON','Switch to wood chips OFF')
+				+ '<label>(switch soil to wood chips when juicy queenbeets have a chance of appearing; '
+				+ '<small>not recommended if "Auto-start savescum" is on<!--due to slower tick rate--></small>)</label><br/>';
 			
-			optionsMenu +=
-				WriteButton('clearJQBTiles','clearJQBTilesButton','Clear JQB tiles ON','Clear JQB tiles OFF') +
-				'<label>(clear away other plants, <small>e.g. duketaters,</small> in tiles where juicy queenbeets could grow)</label><br/>';
+			optionsMenu += WriteButton('clearJQBTiles','clearJQBTilesButton','Clear JQB tiles ON','Clear JQB tiles OFF')
+				+ '<label>(clear away other plants, <small>e.g. duketaters,</small> in tiles where juicy queenbeets could grow)</label><br/>';
 			
-			optionsMenu +=
-				WriteButton('startSaveScum','startSaveScumButton','Auto-start savescum ON','Auto-start savescum OFF') +
-				'<label>(begin auto-savescumming for juicy queenbeets as soon as one can appear'
+			optionsMenu += WriteButton('startSaveScum','startSaveScumButton','Auto-start savescum ON','Auto-start savescum OFF')
+				+ '<label>(begin auto-savescumming for juicy queenbeets as soon as one can appear'
 			if(AutoJQB.countJQBTiles() == 0 || AutoJQB.config.startSaveScum) {
 				optionsMenu += '; <small>if disabled, buttons to kickstart the savescumming yourself will appear here when a JQB is possible</small>)</label><br/>'
 			} else {
@@ -192,20 +189,20 @@ AutoJQB.launch = function(){
 				optionsMenu += '<a class="option' + (AutoJQB.scumCount>0&&!AutoJQB.g.freeze?'':' off') + '" id="cancelSaveScumButton" '+Game.clickStr+'=AutoJQB.setScum(0); "PlaySound(\'snd/tick.mp3\');">Cancel savescumming</a><br/>';
 			}
 			
-			optionsMenu +=
-				WriteButton('harvestQBs','harvestQBsButton','Harvest queenbeets ON','Harvest queenbeets OFF') +
-				'<label>(harvest queenbeets after all possible juicy queenbeets have appeared)</label><br/>';
+			optionsMenu += WriteButton('harvestQBs','harvestQBsButton','Harvest queenbeets ON','Harvest queenbeets OFF')
+				+ '<label>(harvest queenbeets after all possible juicy queenbeets have appeared)</label><br/>';
 			
-			optionsMenu +=
-				WriteButton('plantElderworts','plantElderwortsButton','Plant elderworts ON','Plant elderworts OFF') +
-				'<label>(plant elderworts around growing juicy queenbeets)</label><br/>';
+			optionsMenu += WriteButton('plantElderworts','plantElderwortsButton','Plant elderworts ON','Plant elderworts OFF')
+				+ '<label>(plant elderworts around growing juicy queenbeets)</label><br/>';
 			
-			optionsMenu +=
-				WriteSlider('JQBGrowthSlider', '# JQBs to scum growth for', '[$]', function(){return AutoJQB.config.JQBGrowthCount}, "AutoJQB.setJQBGrowthCount(Math.round(l('JQBGrowthSlider').value)); l('JQBGrowthSliderRightText').innerHTML = AutoJQB.config.JQBGrowthCount;", 0, 4, 1) + '<label>(savescum to ensure that the specified number of juicy queenbeets age with each tick; <small>4 is not recommended, as it can take longer than three minutes to get all 4 to age</small>)</label><br/>';
+			optionsMenu += WriteSlider('JQBGrowthSlider', '# JQBs to scum growth for', '[$]',
+									   function () { return AutoJQB.config.JQBGrowthCount },
+									   "AutoJQB.setJQBGrowthCount(Math.round(l('JQBGrowthSlider').value)); l('JQBGrowthSliderRightText').innerHTML = AutoJQB.config.JQBGrowthCount;", 0, 4, 1)
+				+ '<label>(savescum to ensure that the specified number of juicy queenbeets age with each tick; '
+				+ '<small><strong>4 is not recommended</strong>, as it can take longer than three minutes to get all 4 to age</small>)</label><br/>';
 			
-			optionsMenu +=
-				WriteButton('harvestJQBs','harvestJQBsButton','Harvest juicy queenbeets ON','Harvest juicy queenbeets OFF') +
-				'<label>(harvest mature juicy queenbeets; <small>if this leaves nothing but elderworts, they will be harvested too<small>)</label></div>';
+			optionsMenu += WriteButton('harvestJQBs','harvestJQBsButton','Harvest juicy queenbeets ON','Harvest juicy queenbeets OFF')
+				+ '<label>(harvest mature juicy queenbeets; <small>if this leaves nothing but elderworts, they will be harvested too<small>)</label></div>';
 			
 			CCSE.AppendCollapsibleOptionsMenu(AutoJQB.name, optionsMenu);
 		});
@@ -221,9 +218,9 @@ AutoJQB.launch = function(){
 		if(AutoJQB.status == undefined) AutoJQB.status = 'Not yet determined';
 		Game.customMinigame['Farm'].toolTooltip.push(function(id, str){
 			if(id == 0) {
-				var statusLine = '<!--BeginAJQBStatus--><div width="100%">' +
-						'<b>Auto JQB status:</b><br/>' +
-						AutoJQB.status;
+				var statusLine = '<!--BeginAJQBStatus--><div width="100%">'
+						+ '<b>Auto JQB status:</b><br/>'
+						+ AutoJQB.status;
 				
 				if(AutoJQB.g.soils['fertilizer'].tick == 0.125)
 					statusLine += '<br/>(<b>Debug:</b> fast fertilizer active)';
@@ -232,9 +229,9 @@ AutoJQB.launch = function(){
 				
 				if(str.indexOf('<!--BeginSeedSeekList-->') > 0) {
 					// Add status immediately before Seed Seek list, if present
-					return str.substring(0, str.indexOf('<!--BeginSeedSeekList-->')) +
-							statusLine + '<div class="line" style="clear:both;"></div>' +
-							str.substring(str.indexOf('<!--BeginSeedSeekList-->'));
+					return str.substring(0, str.indexOf('<!--BeginSeedSeekList-->'))
+							+ statusLine + '<div class="line" style="clear:both;"></div>'
+							+ str.substring(str.indexOf('<!--BeginSeedSeekList-->'));
 				} else {
 					// Otherwise, add status after tutorial
 					return str.substring(0, str.indexOf('</small>')+8) +
@@ -277,8 +274,8 @@ AutoJQB.launch = function(){
 		}
 		
 		if(AutoJQB.countPlants() == 0) { // Garden is empty			
-			if(AutoJQB.config.plantQBs && g.plants['queenbeet'].unlocked &&
-					AutoJQB.canAfford('queenbeet')) {
+			if(AutoJQB.config.plantQBs && g.plants['queenbeet'].unlocked
+					&& AutoJQB.canAfford('queenbeet')) {
 				AutoJQB.status = 'Planting queenbeets';
 				AutoJQB.hadGoldenSwitch = false;
 				if(AutoJQB.config.doGoldenSwitch && Game.Has('Golden switch [off]')) {
@@ -320,10 +317,11 @@ AutoJQB.launch = function(){
 			if(AutoJQB.config.switchFertilizer)
 				l('gardenSoil-1').click();
 			
-			if(AutoJQB.config.plantElderworts && // Plant elderworts
-					g.plants['elderwort'].unlocked &&
-					AutoJQB.canAfford('elderwort') && // TODO: Determine # needed
-					AutoJQB.countPlants(8) == 0) {
+			if(AutoJQB.config.plantElderworts // Plant elderworts
+					&& g.plants['elderwort'].unlocked
+					&& AutoJQB.canAfford('elderwort') // TODO: Determine # needed
+					&& AutoJQB.countPlants(8) == 0
+					&& AutoJQB.countPlants(21) == 0) {
 				AutoJQB.hadGoldenSwitch = false;
 				if(AutoJQB.config.doGoldenSwitch && Game.Has('Golden switch [off]')) {
 					AutoJQB.hadGoldenSwitch = true;
@@ -334,14 +332,14 @@ AutoJQB.launch = function(){
 					for(var y = 1; y < 5; y++) {
 						for(var x = 1; x < 5; x++) {
 							// If this is an immature JQB
-							if(g.getTile(x,y)[0] == 22 &&
-									g.getTile(x,y)[1] < g.plants['queenbeetLump'].mature) {
+							if(g.getTile(x,y)[0] == 22
+									&& g.getTile(x,y)[1] < g.plants['queenbeetLump'].mature) {
 								// Plant elderworts in the surrounding tiles
 								for(var y2 = -1; y2 <= 1; y2++) {
 									for(var x2 = -1; x2 <= 1; x2++) {
-										if((y2 != 0 || x2 != 0) &&
-												g.isTileUnlocked(x+x2,y+y2) &&
-												g.getTile(x+x2,y+y2)[0] == 0) {
+										if((y2 != 0 || x2 != 0)
+												&& g.isTileUnlocked(x+x2,y+y2)
+												&& g.getTile(x+x2,y+y2)[0] == 0) {
 											g.seedSelected = g.plants['elderwort'].id;
 											g.clickTile(x+x2,y+y2);
 										}
@@ -371,8 +369,8 @@ AutoJQB.launch = function(){
 					for(var y = 1; y < 5; y++) {
 						for(var x = 1; x < 5; x++) {
 							// If this is an immature JQB
-							if(g.getTile(x,y)[0] == 22 &&
-									g.getTile(x,y)[1] < g.plants['queenbeetLump'].mature) {
+							if(g.getTile(x,y)[0] == 22
+									&& g.getTile(x,y)[1] < g.plants['queenbeetLump'].mature) {
 								AutoJQB.JQBLocations.push([x, y, g.getTile(x,y)[1]]);
 							}
 						}
@@ -381,7 +379,7 @@ AutoJQB.launch = function(){
 					AutoJQB.saveScumLoop = setInterval(AutoJQB.saveScumJQBGrowth, 10);
 				}
 			}
-		} else if(AutoJQB.countJQBTiles(true) > 0) {// Waiting for QBs to mature
+		} else if(AutoJQB.countJQBTiles(true) > 0) { // Waiting for QBs to mature
 			AutoJQB.status = 'Waiting for queenbeets to mature';
 			if(AutoJQB.config.switchFertilizer)
 				l('gardenSoil-1').click();
@@ -393,8 +391,8 @@ AutoJQB.launch = function(){
 	AutoJQB.plantQBs = function() {
 		var g = AutoJQB.g;
 		
-		var xMin, yMin, xMax, yMax;
-		var xExc1, xExc2, yExc1, yExc2;
+		var xMin, yMin, xMax, yMax; // Garden plot boundaries
+		var xExc1, xExc2, yExc1, yExc2; // Tiles to exclude (JQB tiles)
 		
 		switch(Game.Objects['Farm'].level) {
 			case 0:
@@ -503,12 +501,12 @@ AutoJQB.launch = function(){
 			AutoJQB.saveScumLoop = setInterval(AutoJQB.saveScum,10,(count==1)); 
 		}
 		// If garden is frozen, all three buttons are dimmed to show that they're inactive
-		l('scum1JQBButton').className = 'option' +
-				(AutoJQB.scumCount!=1 && !AutoJQB.g.freeze? '' : ' off');
-		l('scumMaxJQBsButton').className = 'option' +
-				(AutoJQB.scumCount<=1 && !AutoJQB.g.freeze? '' : ' off');
-		l('cancelSaveScumButton').className = 'option' +
-				(AutoJQB.scumCount>0 && !AutoJQB.g.freeze? '' : ' off');
+		l('scum1JQBButton').className = 'option'
+				+ (AutoJQB.scumCount!=1 && !AutoJQB.g.freeze? '' : ' off');
+		l('scumMaxJQBsButton').className = 'option'
+				+ (AutoJQB.scumCount<=1 && !AutoJQB.g.freeze? '' : ' off');
+		l('cancelSaveScumButton').className = 'option'
+				+ (AutoJQB.scumCount>0 && !AutoJQB.g.freeze? '' : ' off');
 	}
 	
 	AutoJQB.saveScum = function(justOne) {
@@ -555,9 +553,9 @@ AutoJQB.launch = function(){
 	AutoJQB.saveScumJQBGrowth = function() {
 		var g = AutoJQB.g;
 		
-		if(g.freeze || AutoJQB.JQBLocations.length == 0 || AutoJQB.countPlants(22) == 0 ||
-				AutoJQB.config.JQBGrowthCount == 0 ||
-				(AutoJQB.countJQBTiles() > 0 && (AutoJQB.config.startSaveScum || AutoJQB.scumCount > 0))) {
+		if(g.freeze || AutoJQB.JQBLocations.length == 0 || AutoJQB.countPlants(22) == 0
+				|| AutoJQB.config.JQBGrowthCount == 0
+				|| (AutoJQB.countJQBTiles() > 0 && (AutoJQB.config.startSaveScum || AutoJQB.scumCount > 0))) {
 			// Stop savescumming if garden is frozen, no JQBs are immature, option is disabled,
 			// or appearance of a new JQB can be scummed for
 			clearInterval(AutoJQB.saveScumLoop);
@@ -572,6 +570,7 @@ AutoJQB.launch = function(){
 		// Count # of JQBs that have grown
 		for(var i = 0; i < AutoJQB.JQBLocations.length; i++) {
 			var me = AutoJQB.JQBLocations[i];
+			// me is an array [x, y, age]
 			if(g.getTile(me[0],me[1])[1] > me[2]) {
 				numGrown++;
 			}
@@ -579,8 +578,8 @@ AutoJQB.launch = function(){
 		
 		// If (count) or more have grown
 		if(numGrown >= target) {
-			AutoJQB.status = numGrown + ' JQB' + (numGrown>1? 's' : '') +
-					' aged; preparing to savescum on next tick';
+			AutoJQB.status = numGrown + ' JQB' + (numGrown>1? 's' : '')
+					+ ' aged; preparing to savescum on next tick';
 			AutoJQB.mySaveString = Game.WriteSave(1);
 			AutoJQB.busy = false;
 			
@@ -589,28 +588,28 @@ AutoJQB.launch = function(){
 				var me = AutoJQB.JQBLocations[i];
 				AutoJQB.JQBLocations[i][2] = g.getTile(me[0],me[1])[1];
 				// If the JQB is mature or missing, remove it from consideration
-				if(g.getTile(me[0],me[1])[0] != 22 ||
-						g.getTile(me[0],me[1])[1] >= g.plants['queenbeetLump'].mature) {
+				if(g.getTile(me[0],me[1])[0] != 22
+						|| g.getTile(me[0],me[1])[1] >= g.plants['queenbeetLump'].mature) {
 					AutoJQB.JQBLocations.splice(i,1);
 					i--;
 				}
 			}
 			
-			// Pause the loop for 3 seconds
+			// Pause the loop for 5 seconds
 			clearInterval(AutoJQB.saveScumLoop);
 			setTimeout(function() {
 				AutoJQB.saveScumLoop = setInterval(AutoJQB.saveScumJQBGrowth, 10);
-			}, 3000);
+			}, 5000);
 		} else if(g.nextStep-Date.now() > 1000*(g.soilsById[g.soil].tick*60-2)) {
 			// If time is just after a garden tick, load the save
-			AutoJQB.status = 'Savescumming for ' + target +
-					' JQB' + (target>1? 's' : '') + ' to age';
+			AutoJQB.status = 'Savescumming for ' + target
+					+ ' JQB' + (target>1? 's' : '') + ' to age';
 			AutoJQB.busy = true;
 			Game.ImportSaveCode(AutoJQB.mySaveString);
-		} else if(g.nextStep-Date.now() > 500 && g.nextStep-Date.now() < 1000) {
+		} else if(g.nextStep-Date.now() > 500 && g.nextStep-Date.now() < 3000) {
 			// Save again just before a garden tick
-			AutoJQB.status = 'About to savescum for ' + target +
-					' JQB' + (target>1? 's' : '') + ' to age';
+			AutoJQB.status = 'About to savescum for ' + target
+					+ ' JQB' + (target>1? 's' : '') + ' to age';
 			AutoJQB.busy = true;
 			AutoJQB.mySaveString = Game.WriteSave(1);
 		}
@@ -672,7 +671,7 @@ AutoJQB.launch = function(){
 	AutoJQB.canAfford = function(plant) {
 		var g = AutoJQB.g;
 		
-		var count;
+		var count; // # of plants that can fit in the garden, not counting JQB tiles
 		switch(Game.Objects['Farm'].level) {
 			case 0:
 			case 1:
@@ -738,7 +737,7 @@ AutoJQB.launch = function(){
 		// Because turbo-charged soil is too fast; tick every 7.5 seconds
 		var g = AutoJQB.g;
 		
-		g.soils['fertilizer'].tick = (enable)?0.125:3;
+		g.soils['fertilizer'].tick = (enable)? 0.125 : 3;
 		
 		if(g.nextStep > Date.now() + g.soilsById[g.soil].tick*1000*60) {
 			g.nextStep = Date.now() + g.soilsById[g.soil].tick*1000*60;
@@ -760,7 +759,10 @@ AutoJQB.launch = function(){
 			}
 		}
 	}
-	
+
+	/**
+	 * Sets the garden to have mature queenbeets and 3 out of 4 JQBs already appeared
+	 * */
 	AutoJQB.debug.matureQBs = function() {
 		if(Game.Objects['Farm'].level < 9)
 			return;
@@ -769,12 +771,12 @@ AutoJQB.launch = function(){
 		var jqb = [22, 0];
 		
 		var plot = [
-				[qb,qb,qb,qb,qb,qb],
-				[qb,jqb,qb,qb,jqb,qb],
-				[qb,qb,qb,qb,qb,qb],
-				[qb,qb,qb,qb,qb,qb],
-				[qb,jqb,qb,qb,[0,0],qb],
-				[qb,qb,qb,qb,qb,qb]
+				[qb, qb, qb, qb, qb, qb],
+				[qb, jqb,qb, qb, jqb,qb],
+				[qb, qb, qb, qb, qb, qb],
+				[qb, qb, qb, qb, qb, qb],
+				[qb, jqb,qb, qb, [0,0],qb],
+				[qb, qb, qb, qb, qb, qb]
 		];
 		
 		for(var row = 0; row < plot.length; row++) {
@@ -787,8 +789,6 @@ AutoJQB.launch = function(){
 		}
 	}
 	
-	// After loading the garden, changes won't be immediately visible;
-	// save and reload to see them.
 	AutoJQB.debug.loadGarden = function() {
 		if(!AutoJQB.config.debugGardenSave) return;
 		
@@ -806,11 +806,10 @@ AutoJQB.launch = function(){
 		
 		if(AutoJQB.countPlants() != 0) {
 			// I don't know how to redraw the garden oops
-			console.log('If the garden appears unchanged, this is a visual bug; ' +
-					'save and refresh the page to fix it.')
+			console.log('If the garden appears unchanged, this is a visual bug; '
+					+ 'save and refresh the page to fix it.')
 		}
 	}
-	
 	
 	if(CCSE.ConfirmGameVersion(AutoJQB.name, AutoJQB.version, AutoJQB.GameVersion))
 		Game.registerMod(AutoJQB.name, AutoJQB);
