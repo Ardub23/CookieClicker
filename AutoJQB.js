@@ -1,5 +1,5 @@
 //******************************************
-// Auto JQB v1.1.4
+// Auto JQB v1.1.5
 // by Ardub (reddit.com/u/Ardub23)
 // 
 // CCSE and portions of this program's code
@@ -13,7 +13,7 @@ Game.Win('Third-party');
 if(AutoJQB === undefined) var AutoJQB = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 AutoJQB.name = 'Auto JQB';
-AutoJQB.version = '1.1.4';
+AutoJQB.version = '1.1.5';
 AutoJQB.GameVersion = '2.031';
 
 AutoJQB.launch = function(){
@@ -34,6 +34,7 @@ AutoJQB.launch = function(){
 			AutoJQB.g = Game.Objects['Farm'].minigame;
 			AutoJQB.busy = false;
 			AutoJQB.scumCount = 0;
+			AutoJQB.prevSoil = AutoJQB.g.soil;
 			AutoJQB.refreshId = setInterval(AutoJQB.autoFarm, 1000*5);	// run every 5 seconds
 		}, 'Farm');
 		
@@ -256,6 +257,8 @@ AutoJQB.launch = function(){
 		
 		if(Game.Objects['Farm'].level < 3 || AutoJQB.busy || g.freeze)
 			return false;
+
+		AutoJQB.prevSoil = AutoJQB.g.soil;
 		
 		// Harvest mature JQBs
 		if(AutoJQB.config.harvestJQBs) {
@@ -512,17 +515,17 @@ AutoJQB.launch = function(){
 	AutoJQB.saveScum = function(justOne) {
 		var g = AutoJQB.g;
 		
-		if(g.freeze || AutoJQB.countJQBTiles() == 0) {
+		if (g.freeze || AutoJQB.countJQBTiles() == 0) {
 			// Stop save-scumming if garden is frozen or no more JQBs can grow
 			AutoJQB.busy = false;
 			AutoJQB.scumCount = 0;
 			clearInterval(AutoJQB.saveScumLoop);
-		} else if(AutoJQB.countPlants(22) >= AutoJQB.desiredAmount) {
+		} else if (AutoJQB.countPlants(22) >= AutoJQB.desiredAmount) {
 			// If we've gained a JQB, save and prepare to go for the next one
 			AutoJQB.mySaveString = Game.WriteSave(1);
 			AutoJQB.busy = false;
-			
-			if(justOne || AutoJQB.countJQBTiles() == 0) {
+
+			if (justOne || AutoJQB.countJQBTiles() == 0) {
 				// Done save scumming
 				AutoJQB.status = 'Finished savescumming; determining what to do next';
 				AutoJQB.scumCount = 0;
@@ -531,23 +534,31 @@ AutoJQB.launch = function(){
 			} else {
 				AutoJQB.status = 'Got a JQB; preparing to savescum for another';
 				AutoJQB.desiredAmount = AutoJQB.countPlants(22) + 1;
-				// Pause the loop for 3 seconds
+				// Pause the loop for 5 seconds
 				clearInterval(AutoJQB.saveScumLoop);
-				setTimeout(function() {
+				setTimeout(function () {
 					AutoJQB.saveScumLoop = setInterval(AutoJQB.saveScum, 10);
-				}, 3000);
+				}, 5000);
 			}
-		} else if(g.nextStep - Date.now() > 1000*(g.soilsById[g.soil].tick*60-2)) {
+		} else if (AutoJQB.changedSoil()) {
+			// Safety precaution, in case new soil's tick time is shorter than previous tick time
+			// Pause loop for 5 seconds
+			clearInterval(AutoJQB.saveScumLoop);
+			setTimeout(function () {
+				AutoJQB.saveScumLoop = setInterval(AutoJQB.saveScum, 10);
+			}, 5000);
+		} else if (AutoJQB.timeToTick() > 1000*(g.soilsById[g.soil].tick*60-2)) {
 			// If time is just after a garden tick, load the save
 			AutoJQB.status = 'Savescumming for a JQB to appear';
 			AutoJQB.busy = true;
 			Game.ImportSaveCode(AutoJQB.mySaveString);
-		} else if(g.nextStep - Date.now() > 500 && g.nextStep-Date.now() < 1000) {
+		} else if (AutoJQB.timeToTick() > 500 && AutoJQB.timeToTick() < 1000) {
 			// Save again just before a garden tick
 			AutoJQB.status = 'Preparing to savescum for a JQB to appear';
 			AutoJQB.busy = true;
 			AutoJQB.mySaveString = Game.WriteSave(1);
 		}
+		AutoJQB.prevSoil = AutoJQB.g.soil;
 	}
 	
 	AutoJQB.saveScumJQBGrowth = function() {
@@ -600,19 +611,27 @@ AutoJQB.launch = function(){
 			setTimeout(function() {
 				AutoJQB.saveScumLoop = setInterval(AutoJQB.saveScumJQBGrowth, 10);
 			}, 5000);
-		} else if(g.nextStep-Date.now() > 1000*(g.soilsById[g.soil].tick*60-2)) {
+		} else if (AutoJQB.changedSoil()) {
+			// Safety precaution, in case new soil's tick time is shorter than previous tick time
+			// Pause the loop for 5 seconds
+			clearInterval(AutoJQB.saveScumLoop);
+			setTimeout(function () {
+				AutoJQB.saveScumLoop = setInterval(AutoJQB.saveScumJQBGrowth, 10);
+			}, 5000);
+		} else if (AutoJQB.timeToTick() > 1000*(g.soilsById[g.soil].tick*60-2)) {
 			// If time is just after a garden tick, load the save
 			AutoJQB.status = 'Savescumming for ' + target
 					+ ' JQB' + (target>1? 's' : '') + ' to age';
 			AutoJQB.busy = true;
 			Game.ImportSaveCode(AutoJQB.mySaveString);
-		} else if(g.nextStep-Date.now() > 500 && g.nextStep-Date.now() < 3000) {
+		} else if (AutoJQB.timeToTick() > 500 && AutoJQB.timeToTick() < 3000) {
 			// Save again just before a garden tick
 			AutoJQB.status = 'About to savescum for ' + target
 					+ ' JQB' + (target>1? 's' : '') + ' to age';
 			AutoJQB.busy = true;
 			AutoJQB.mySaveString = Game.WriteSave(1);
 		}
+		AutoJQB.prevSoil = AutoJQB.g.soil;
 	}
 	
 	//***********************************
@@ -726,7 +745,15 @@ AutoJQB.launch = function(){
 		// We're ignoring the possibility that it might be cheaper to leave the GS on
 		return (Game.cookies >= cost);
 	}
-	
+
+	AutoJQB.timeToTick = function() {
+		return AutoJQB.g.nextStep - Date.now();
+	}
+
+	AutoJQB.changedSoil = function() {
+		return AutoJQB.g.soil != AutoJQB.prevSoil;
+    }
+
 	//***********************************
 	//    Debug functions
 	//***********************************
