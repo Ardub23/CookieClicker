@@ -1,5 +1,5 @@
 v1.1.6
-– Rather than auto-harvesting queenbeets, a new option allows you to have the garden freeze itself in that state so you can harvest them manually at a more profitable time. (It must be unfrozen manually.)
+– If auto-harvesting queenbeets is disabled, a new option allows you to have the garden freeze itself in that state so you can harvest them manually at a more profitable time.
 
 v1.1.5
 – Previous auto-savescumming change now applies to both types of savescumming (JQB appearance and aging)
