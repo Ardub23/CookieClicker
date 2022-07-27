@@ -1,3 +1,6 @@
+v1.0.8
+– Compatibility with Cookie Clicker v2.048
+
 v1.0.7
 – Bugfix: Now handles when CCSE erroneously(?) passes nothing to load(); no more odd behavior when importing a save
 

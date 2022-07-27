@@ -1,5 +1,5 @@
 //*******************************************
-// Disable Big Cookie v1.0.7
+// Disable Big Cookie v1.0.8
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
 // CCSE and portions of this program's code
@@ -10,8 +10,8 @@ Game.Win('Third-party');
 if(DisableBigCookie === undefined) var DisableBigCookie = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 DisableBigCookie.name = 'Disable Big Cookie';
-DisableBigCookie.version = '1.0.7';
-DisableBigCookie.GameVersion = '2.031';
+DisableBigCookie.version = '1.0.8';
+DisableBigCookie.GameVersion = '2.048';
 
 DisableBigCookie.launch = function(){
 	DisableBigCookie.init = function(){
