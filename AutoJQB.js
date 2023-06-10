@@ -1,5 +1,5 @@
 //******************************************
-// Auto JQB v1.1.7
+// Auto JQB v1.1.8
 // by Ardub (reddit.com/u/Ardub23)
 // 
 // CCSE and portions of this program's code
@@ -13,8 +13,8 @@ Game.Win('Third-party');
 if(AutoJQB === undefined) var AutoJQB = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 AutoJQB.name = 'Auto JQB';
-AutoJQB.version = '1.1.7';
-AutoJQB.GameVersion = '2.048';
+AutoJQB.version = '1.1.8';
+AutoJQB.GameVersion = '2.052';
 
 AutoJQB.launch = function(){
 	AutoJQB.init = function(){
