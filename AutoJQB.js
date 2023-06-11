@@ -1,5 +1,5 @@
 //******************************************
-// Auto JQB v1.1.8
+// Auto JQB v1.1.9
 // by Ardub (reddit.com/u/Ardub23)
 // 
 // CCSE and portions of this program's code
@@ -13,7 +13,7 @@ Game.Win('Third-party');
 if(AutoJQB === undefined) var AutoJQB = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 AutoJQB.name = 'Auto JQB';
-AutoJQB.version = '1.1.8';
+AutoJQB.version = '1.1.9';
 AutoJQB.GameVersion = '2.052';
 
 AutoJQB.launch = function(){
@@ -23,8 +23,15 @@ AutoJQB.launch = function(){
 		AutoJQB.config = {};
 		
 		AutoJQB.config = AutoJQB.defaultConfig();
-		CCSE.customLoad.push(AutoJQB.load);
-		CCSE.customSave.push(AutoJQB.save);
+		CCSE.customSave.push(function() {
+			CCSE.config.OtherMods.AutoJQB = AutoJQB.config;
+		});
+		CCSE.customLoad.push(function() {
+			if (CCSE.config.OtherMods.AutoJQB)
+				AutoJQB.config = CCSE.config.OtherMods.AutoJQB;
+			else
+				AutoJQB.config = AutoJQB.defaultConfig();
+		});
 		
 		CCSE.MinigameReplacer(AutoJQB.ReplaceFarmTooltip, 'Farm');
 		AutoJQB.ReplaceGameMenu();
@@ -62,20 +69,6 @@ AutoJQB.launch = function(){
 	//***********************************
 	//    Configuration
 	//***********************************
-	AutoJQB.save = function(){
-		if(CCSE.config.OtherMods.AutoJQB)
-			delete CCSE.config.OtherMods.AutoJQB; // no need to keep this, it's now junk data
-		return JSON.stringify(AutoJQB.config);
-	}
-
-	AutoJQB.load = function(str){
-		if(!str) return;
-		var config = JSON.parse(str);
-		for(var pref in config){
-			AutoJQB.config[pref] = config[pref];
-		}
-	}
-	
 	AutoJQB.defaultConfig = function(){
 		return {
 			plantQBs: false,

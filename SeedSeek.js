@@ -1,5 +1,5 @@
 //***********************************************
-// Seed Seek v1.0.11
+// Seed Seek v1.0.12
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
 // CCSE and some portions of this program's code
@@ -10,7 +10,7 @@ Game.Win('Third-party');
 if(SeedSeek === undefined) var SeedSeek = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 SeedSeek.name = 'Seed Seek';
-SeedSeek.version = '1.0.11';
+SeedSeek.version = '1.0.12';
 SeedSeek.GameVersion = '2.052';
 
 SeedSeek.launch = function(){
@@ -20,8 +20,15 @@ SeedSeek.launch = function(){
 		SeedSeek.config = {};
 		
 		SeedSeek.config = SeedSeek.defaultConfig();
-		CCSE.customLoad.push(SeedSeek.load);
-		CCSE.customSave.push(SeedSeek.save);
+		CCSE.customSave.push(function() {
+			CCSE.config.OtherMods.SeedSeek = SeedSeek.config;
+		});
+		CCSE.customLoad.push(function() {
+			if (CCSE.config.OtherMods.SeedSeek)
+				SeedSeek.config = CCSE.config.OtherMods.SeedSeek;
+			else
+				SeedSeek.config = SeedSeek.defaultConfig();
+		});
 		
 		CCSE.MinigameReplacer(SeedSeek.ReplaceFarmTooltip, 'Farm');
 		SeedSeek.ReplaceGameMenu();
@@ -46,20 +53,6 @@ SeedSeek.launch = function(){
 	//***********************************
 	//    Configuration
 	//***********************************
-	SeedSeek.save = function(){
-		if(CCSE.config.OtherMods.SeedSeek)
-			delete CCSE.config.OtherMods.SeedSeek; // no need to keep this, it's now junk data
-		return JSON.stringify(SeedSeek.config);
-	}
-	
-	SeedSeek.load = function(str){
-		if(!str) return;
-		var config = JSON.parse(str);
-		for(var pref in config){
-			SeedSeek.config[pref] = config[pref];
-		}
-	}
-	
 	SeedSeek.defaultConfig = function(){
 		return {
 			showAll: false,

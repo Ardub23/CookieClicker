@@ -1,5 +1,5 @@
 //*******************************************
-// Disable Big Cookie v1.0.9
+// Disable Big Cookie v1.0.10
 // by Ardub23 (reddit.com/u/Ardub23)
 // 
 // CCSE and portions of this program's code
@@ -10,7 +10,7 @@ Game.Win('Third-party');
 if(DisableBigCookie === undefined) var DisableBigCookie = {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/' + (0 ? 'Beta/' : '') + 'CCSE.js');
 DisableBigCookie.name = 'Disable Big Cookie';
-DisableBigCookie.version = '1.0.9';
+DisableBigCookie.version = '1.0.10';
 DisableBigCookie.GameVersion = '2.052';
 
 DisableBigCookie.launch = function(){
@@ -20,8 +20,16 @@ DisableBigCookie.launch = function(){
 		DisableBigCookie.config = {};
 		
 		DisableBigCookie.config = DisableBigCookie.defaultConfig();
-		CCSE.customLoad.push(DisableBigCookie.load);
-		CCSE.customSave.push(DisableBigCookie.save);
+		CCSE.customSave.push(function() {
+			CCSE.config.OtherMods.DisableBigCookie = DisableBigCookie.config;
+		});
+		CCSE.customLoad.push(function() {
+			if (CCSE.config.OtherMods.DisableBigCookie)
+				DisableBigCookie.config = CCSE.config.OtherMods.DisableBigCookie;
+			else
+				DisableBigCookie.config = DisableBigCookie.defaultConfig();
+			DisableBigCookie.setBigCookie();
+		});
 		
 		DisableBigCookie.ReplaceGameMenu();
 		DisableBigCookie.setBigCookie();
@@ -45,21 +53,6 @@ DisableBigCookie.launch = function(){
 	//***********************************
 	//    Configuration
 	//***********************************
-	DisableBigCookie.save = function(){
-		if(CCSE.config.OtherMods.DisableBigCookie)
-			delete CCSE.config.OtherMods.DisableBigCookie; // no need to keep this, it's now junk data
-		return JSON.stringify(DisableBigCookie.config);
-	}
-
-	DisableBigCookie.load = function(str){
-		if(!str) return;
-		var config = JSON.parse(str);
-		for(var pref in config){
-			DisableBigCookie.config[pref] = config[pref];
-		}
-		DisableBigCookie.setBigCookie();
-	}
-	
 	DisableBigCookie.defaultConfig = function() {
 		return {allowBigCookie : true};
 	}

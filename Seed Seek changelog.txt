@@ -1,3 +1,6 @@
+v1.0.12
+– Preferences are now saved with CCSE
+
 v1.0.11
 – Compatibility with Cookie Clicker v2.052
 
